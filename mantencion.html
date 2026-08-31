@@ -8,18 +8,26 @@
 </head>
 <body>
   <header class="site-header">
-    <div class="brand-dropdown dropdown">
-      <button class="dropdown-toggle">Hotel Almendro ▾</button>
-      <div class="dropdown-menu">
-        <a href="index.html">Panel</a>
-        <a href="mantencion.html">Mantención</a>
-        <a href="mejoras.html">Mejoras</a>
-        <a href="remodelacion.html">Remodelación</a>
-        <a href="login.html" class="muted">Salir</a>
-      </div>
-    </div>
+    <button id="menuBtn" class="menu-btn" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="brand">Hotel Almendro</div>
     <h1>Mantención</h1>
   </header>
+
+  <aside id="sideMenu" class="side-menu" aria-hidden="true">
+    <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
+    <nav class="side-nav">
+      <a href="index.html">Panel</a>
+      <a href="mantencion.html">Mantención</a>
+      <a href="mejoras.html">Mejoras</a>
+      <a href="remodelacion.html">Remodelación</a>
+      <a href="login.html" class="muted">Salir</a>
+    </nav>
+  </aside>
+  <div id="overlay" class="overlay"></div>
   <main class="container">
     <section class="grid two">
       <div class="card">

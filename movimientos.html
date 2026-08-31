@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Movimientos - Hotel Almendro</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button id="menuBtn" class="menu-btn" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="brand">Hotel Almendro</div>
+  </header>
+
+  <aside id="sideMenu" class="side-menu" aria-hidden="true">
+    <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
+    <nav class="side-nav">
+      <a href="index.html">Panel</a>
+      <a href="inventario.html">Inventario</a>
+      <a href="recepcion.html">Recepción</a>
+      <a href="movimientos.html" class="active">Movimientos</a>
+      <a href="login.html" class="muted">Salir</a>
+    </nav>
+  </aside>
+  <div id="overlay" class="overlay"></div>
+
+  <main class="container">
+    <section class="page-header">
+      <h1>Movimientos de Inventario</h1>
+      <p>Trazabilidad de entradas y salidas</p>
+    </section>
+
+    <section class="search-filters card">
+      <div class="filter-group">
+        <label for="tipoMovimiento">Tipo de Movimiento:</label>
+        <select id="tipoMovimiento" class="filter-select">
+          <option value="">Todos</option>
+          <option value="entrada">Entrada (Recepción)</option>
+          <option value="salida">Salida (Despacho)</option>
+          <option value="ajuste">Ajuste</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="fechaMovimiento">Fecha:</label>
+        <input type="date" id="fechaMovimiento" class="filter-input">
+      </div>
+      <div class="filter-group">
+        <label for="areaDestino">Área:</label>
+        <select id="areaDestino" class="filter-select">
+          <option value="">Todas las áreas</option>
+          <option value="recepcion">Recepción</option>
+          <option value="cocina">Cocina</option>
+          <option value="comedor">Comedor</option>
+          <option value="desayuno">Desayuno</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="table-container card">
+      <table class="movements-table">
+        <thead>
+          <tr>
+            <th>Fecha/Hora</th>
+            <th>Tipo</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Responsable</th>
+            <th>Área / Destino</th>
+            <th>Lote</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody id="movementsBody">
+          <tr>
+            <td colspan="8" class="muted">No hay movimientos registrados aún.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="summary-stats card">
+      <div class="stat-group">
+        <h3>Resumen del Día</h3>
+        <div class="stat-row">
+          <span>Entradas totales:</span>
+          <strong id="totalEntradas">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Salidas totales:</span>
+          <strong id="totalSalidas">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Movimientos por Recepción:</span>
+          <strong id="movRecepcion">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Movimientos por Cocina:</span>
+          <strong id="movCocina">0</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

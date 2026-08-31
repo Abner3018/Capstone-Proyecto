@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Inventario - Hotel Almendro</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button id="menuBtn" class="menu-btn" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="brand">Hotel Almendro</div>
+  </header>
+
+  <aside id="sideMenu" class="side-menu" aria-hidden="true">
+    <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
+    <nav class="side-nav">
+      <a href="index.html">Panel</a>
+      <a href="inventario.html" class="active">Inventario</a>
+      <a href="recepcion.html">Recepción</a>
+      <a href="movimientos.html">Movimientos</a>
+      <a href="login.html" class="muted">Salir</a>
+    </nav>
+  </aside>
+  <div id="overlay" class="overlay"></div>
+
+  <main class="container">
+    <section class="page-header">
+      <h1>Gestión de Inventario</h1>
+      <p>Catálogo de productos (~200 ítems)</p>
+    </section>
+
+    <section class="search-filters card">
+      <div class="search-group">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nombre de producto...">
+      </div>
+      <div class="filter-group">
+        <label for="categoryFilter">Categoría:</label>
+        <select id="categoryFilter" class="filter-select">
+          <option value="">Todas las categorías</option>
+          <option value="bebidas">Bebidas</option>
+          <option value="snacks">Snacks</option>
+          <option value="pan">Pan y Derivados</option>
+          <option value="lacteos">Lácteos</option>
+          <option value="frutas">Frutas y Verduras</option>
+          <option value="condimentos">Condimentos</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="stockFilter">Estado Stock:</label>
+        <select id="stockFilter" class="filter-select">
+          <option value="">Todos</option>
+          <option value="critico">Crítico (Rojo)</option>
+          <option value="bajo">Bajo (Amarillo)</option>
+          <option value="normal">Normal (Verde)</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="table-container card">
+      <table class="inventory-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Unidad</th>
+            <th>Stock Actual</th>
+            <th>Mínimo</th>
+            <th>Precio Unit.</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryBody">
+          <!-- Los productos se cargarán dinámicamente aquí -->
+        </tbody>
+      </table>
+    </section>
+
+    <section class="stats card">
+      <div class="stat-item">
+        <h3 id="totalProducts">0</h3>
+        <p>Total Productos</p>
+      </div>
+      <div class="stat-item">
+        <h3 id="criticalCount" style="color: #ef4444;">0</h3>
+        <p>Stock Crítico</p>
+      </div>
+      <div class="stat-item">
+        <h3 id="lowCount" style="color: #f59e0b;">0</h3>
+        <p>Stock Bajo</p>
+      </div>
+      <div class="stat-item">
+        <h3 id="normalCount" style="color: #10b981;">0</h3>
+        <p>Stock Normal</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

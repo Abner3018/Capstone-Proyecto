@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Recepción - Hotel Almendro</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button id="menuBtn" class="menu-btn" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="brand">Hotel Almendro</div>
+  </header>
+
+  <aside id="sideMenu" class="side-menu" aria-hidden="true">
+    <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
+    <nav class="side-nav">
+      <a href="index.html">Panel</a>
+      <a href="inventario.html">Inventario</a>
+      <a href="recepcion.html" class="active">Recepción</a>
+      <a href="movimientos.html">Movimientos</a>
+      <a href="login.html" class="muted">Salir</a>
+    </nav>
+  </aside>
+  <div id="overlay" class="overlay"></div>
+
+  <main class="container">
+    <section class="page-header">
+      <h1>Recepción de Mercadería</h1>
+      <p>Ingreso de productos a bodega</p>
+    </section>
+
+    <section class="form-container card">
+      <form id="recepcionForm" class="form-group">
+        <div class="form-row">
+          <div class="form-col">
+            <label for="producto">Producto *</label>
+            <select id="producto" required>
+              <option value="">-- Seleccionar producto --</option>
+            </select>
+          </div>
+          <div class="form-col">
+            <label for="cantidad">Cantidad *</label>
+            <input type="number" id="cantidad" placeholder="Ej: 100" min="1" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label for="lote">Número de Lote *</label>
+            <input type="text" id="lote" placeholder="Ej: LOT-2024-001" required>
+          </div>
+          <div class="form-col">
+            <label for="fechaVencimiento">Fecha de Vencimiento *</label>
+            <input type="date" id="fechaVencimiento" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label for="fraccionado">¿Fraccionar en bolsas/paquetes?</label>
+            <select id="fraccionado">
+              <option value="no">No</option>
+              <option value="si">Sí</option>
+            </select>
+          </div>
+          <div class="form-col" id="fraccionDiv" style="display:none;">
+            <label for="unidadesPorBolsa">Unidades por bolsa</label>
+            <input type="number" id="unidadesPorBolsa" placeholder="Ej: 10" min="1">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label for="bodeguero">Bodeguero que recibe *</label>
+            <input type="text" id="bodeguero" placeholder="Nombre completo" required>
+          </div>
+          <div class="form-col">
+            <label for="proveedor">Proveedor</label>
+            <input type="text" id="proveedor" placeholder="Nombre del proveedor">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label for="observaciones">Observaciones</label>
+            <textarea id="observaciones" placeholder="Notas adicionales..."></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Registrar Entrada</button>
+      </form>
+    </section>
+
+    <section class="recent-receptions card">
+      <h2>Últimas Recepciones</h2>
+      <div id="receptionsList">
+        <p class="muted">No hay recepciones registradas aún.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

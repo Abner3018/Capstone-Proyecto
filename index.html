@@ -8,18 +8,27 @@
 </head>
 <body>
   <header class="site-header">
-    <div class="brand-dropdown dropdown">
-      <button class="dropdown-toggle">Hotel Almendro ▾</button>
-      <div class="dropdown-menu">
-        <a href="index.html">Panel</a>
-        <a href="mantencion.html">Mantención</a>
-        <a href="mejoras.html">Mejoras</a>
-        <a href="remodelacion.html">Remodelación</a>
-        <a href="login.html" class="muted">Salir</a>
-      </div>
-    </div>
+    <button id="menuBtn" class="menu-btn" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="brand">Hotel Almendro</div>
   </header>
+
+  <aside id="sideMenu" class="side-menu" aria-hidden="true">
+    <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
+    <nav class="side-nav">
+      <a href="index.html" class="active">Panel</a>
+      <a href="inventario.html">Inventario</a>
+      <a href="recepcion.html">Recepción</a>
+      <a href="movimientos.html">Movimientos</a>
+      <a href="login.html" class="muted">Salir</a>
+    </nav>
+  </aside>
+  <div id="overlay" class="overlay"></div>
   <main class="container">
+    <div class="hero">
     <section class="grid three">
       <a class="card main-card mantencion" href="mantencion.html">
         <h2>Mantención General</h2>
@@ -34,7 +43,42 @@
         <p>Cambios en espacios existentes.</p>
       </a>
     </section>
+    </section>
+
+    <section class="charts">
+      <div class="chart-card card">
+        <h3>Uso de recursos (simulado)</h3>
+        <canvas id="cpuChart" width="600" height="220"></canvas>
+      </div>
+      <div class="chart-card card">
+        <h3>Tareas completadas (semana)</h3>
+        <canvas id="tasksChart" width="600" height="220"></canvas>
+      </div>
+    </section>
+
+    <section class="urgent">
+      <div class="card">
+        <h3>Tareas Urgentes</h3>
+        <div class="urgent-list">
+          <div class="urgent-item">
+            <h4>Mantención Reactiva</h4>
+            <p>Reparar taza de baño — tiempo restante: <span class="countdown" data-seconds="3600">01:00:00</span></p>
+          </div>
+          <div class="urgent-item">
+            <h4>Remodelación - Sala</h4>
+            <p>Entrega de materiales — tiempo restante: <span class="countdown" data-seconds="7200">02:00:00</span></p>
+          </div>
+          <div class="urgent-item">
+            <h4>Mejoras - Jardín</h4>
+            <p>Revisión proyecto — tiempo restante: <span class="countdown" data-seconds="1800">00:30:00</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+    </div>
   </main>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

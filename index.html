@@ -8,38 +8,31 @@
 </head>
 <body>
   <header class="site-header">
-    <h1>Hotel Almendro — Panel</h1>
-    <nav class="topnav">
-      <a href="mantencion.html">Mantención</a>
-      <a href="mejoras.html">Mejoras</a>
-      <a href="remodelacion.html">Remodelación</a>
-      <a href="login.html" class="muted">Salir</a>
-    </nav>
+    <div class="brand-dropdown dropdown">
+      <button class="dropdown-toggle">Hotel Almendro ▾</button>
+      <div class="dropdown-menu">
+        <a href="index.html">Panel</a>
+        <a href="mantencion.html">Mantención</a>
+        <a href="mejoras.html">Mejoras</a>
+        <a href="remodelacion.html">Remodelación</a>
+        <a href="login.html" class="muted">Salir</a>
+      </div>
+    </div>
   </header>
   <main class="container">
     <section class="grid three">
-      <a class="card main-card" href="mantencion.html">
+      <a class="card main-card mantencion" href="mantencion.html">
         <h2>Mantención General</h2>
         <p>Accede a tareas periódicas y reactivas.</p>
       </a>
-      <a class="card main-card" href="mejoras.html">
+      <a class="card main-card mejoras" href="mejoras.html">
         <h2>Mejoras</h2>
         <p>Proyectos y mejoras futuras.</p>
       </a>
-      <a class="card main-card" href="remodelacion.html">
+      <a class="card main-card remodelacion" href="remodelacion.html">
         <h2>Remodelaciones</h2>
         <p>Cambios en espacios existentes.</p>
       </a>
-    </section>
-
-    <section class="cards-preview">
-      <h3>Vista rápida — Mantención (ejemplo)</h3>
-      <div class="grid four">
-        <div class="subcard">Mantención Máquinas<br><small>anual/mensual/semanal</small></div>
-        <div class="subcard">Mantención Jardinería<br><small>temporal</small></div>
-        <div class="subcard">Mantención Reactiva<br><small>reparaciones urgentes</small></div>
-        <div class="subcard">Mantención Obras<br><small>pintar rejas, arreglos</small></div>
-      </div>
     </section>
   </main>
   <script src="js/main.js"></script>

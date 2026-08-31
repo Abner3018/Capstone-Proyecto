@@ -1,0 +1,22 @@
+:root{--accent:#2b6cb0;--muted:#6b7280;--card:#ffffff}
+*{box-sizing:border-box;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif}
+body{margin:0;background:linear-gradient(180deg,#f8fafc,#f1f5f9);color:#0f172a}
+.site-header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:var(--card);box-shadow:0 1px 4px rgba(2,6,23,.06)}
+.site-header h1{margin:0;font-size:18px}
+.topnav a{margin-left:12px;color:var(--accent);text-decoration:none}
+.container{max-width:1100px;margin:28px auto;padding:0 18px}
+.grid{display:grid;gap:16px}
+.three{grid-template-columns:repeat(3,1fr)}
+.two{grid-template-columns:repeat(2,1fr)}
+.four{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--card);padding:18px;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,.06)}
+.main-card{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:28px;text-decoration:none;color:inherit}
+.main-card h2{margin:0 0 8px 0}
+.subcard{background:#eef2ff;padding:12px;border-radius:6px;text-align:center}
+.login-card{width:320px;text-align:left}
+.page-center{display:flex;align-items:center;justify-content:center;height:100vh}
+label{display:block;margin-top:8px;font-size:13px}
+input{width:100%;padding:8px;margin-top:6px;border:1px solid #e6e9ee;border-radius:6px}
+.btn{margin-top:14px;padding:10px 14px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer}
+.muted{color:var(--muted);font-size:13px}
+@media (max-width:900px){.three{grid-template-columns:1fr}.four{grid-template-columns:repeat(2,1fr)}}

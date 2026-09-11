@@ -20,30 +20,252 @@
   <aside id="sideMenu" class="side-menu" aria-hidden="true">
     <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
     <nav class="side-nav">
-      <a href="../dashboard/index.html">Panel</a>
+      <a href="mantencion.html">Panel</a>
       <a href="mantencion.html">Mantención</a>
       <a href="mejoras.html">Mejoras</a>
-      <a href="remodelacion.html">Remodelación</a>
+      <a href="remodelacion.html" class="active">Remodelación</a>
       <a href="../auth/login.html" class="muted">Salir</a>
     </nav>
   </aside>
   <div id="overlay" class="overlay"></div>
+
   <main class="container">
-    <section class="grid two">
-      <div class="card">
-        <h2>Ejemplos</h2>
-        <ul>
-          <li>Una habitación</li>
-          <li>Un pasillo</li>
-          <li>Un salón</li>
-        </ul>
+    <!-- Main Tabs -->
+    <div class="tabs-container">
+      <div class="tabs-nav">
+        <button class="tab-btn" data-tab="mantencion">Mantención General</button>
+        <button class="tab-btn" data-tab="mejoras">Mejoras</button>
+        <button class="tab-btn active" data-tab="remodelacion">Remodelación</button>
       </div>
-      <div class="card">
-        <h2>Costos</h2>
-        <p>Indicar costo y cantidad de cada material por proyecto.</p>
+    </div>
+
+    <!-- Remodelación Tab Content -->
+    <div id="remodelacion" class="tab-content active">
+      <div class="alert-info" style="margin-bottom:20px">ℹ️ Cada proyecto de remodelación debe especificar el costo y cantidad de materiales para calcular el costo total del proyecto.</div>
+
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-subtab="cambio-existente">Cambio de espacio existente</button>
       </div>
-    </section>
+
+      <div id="cambio-existente" class="subtab-content active">
+        <h3>PROYECTOS DE REMODELACIÓN</h3>
+
+        <div class="project-card">
+          <div class="project-header" onclick="this.closest('.project-card').querySelector('.project-details').classList.toggle('show')">
+            <div>
+              <div class="project-title">REM-001 — Habitación 101 – Suite principal</div>
+              <div class="project-desc">Renovación completa: nuevo piso flotante, pintura, mobiliario y baño reformado.</div>
+              <div class="project-material-count" style="margin-top:8px">5 materiales</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:#999">EN CURSO</div>
+              <div class="project-cost">$1.114.000</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <div style="background:#f8f9fa;padding:12px;border-radius:6px;margin-bottom:12px;font-size:13px;color:#555">
+              <strong>Responsable:</strong> ARQ. VALERIA MÉNDEZ | <strong>ID:</strong> REM-001
+            </div>
+            <table class="material-table">
+              <thead>
+                <tr>
+                  <th>Material</th>
+                  <th>Unidad</th>
+                  <th>Cantidad</th>
+                  <th>Costo unit.</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Piso flotante AC5</td>
+                  <td>m²</td>
+                  <td>28</td>
+                  <td>$12.500</td>
+                  <td>$350.000</td>
+                </tr>
+                <tr>
+                  <td>Pintura interior latex premium</td>
+                  <td>litros</td>
+                  <td>20</td>
+                  <td>$8.900</td>
+                  <td>$178.000</td>
+                </tr>
+                <tr>
+                  <td>Cerámica baño 30×60</td>
+                  <td>m²</td>
+                  <td>14</td>
+                  <td>$18.000</td>
+                  <td>$252.000</td>
+                </tr>
+                <tr>
+                  <td>Taza WC + bidet</td>
+                  <td>unid</td>
+                  <td>1</td>
+                  <td>$245.000</td>
+                  <td>$245.000</td>
+                </tr>
+                <tr>
+                  <td>Lavamanos empotrado</td>
+                  <td>unid</td>
+                  <td>1</td>
+                  <td>$89.000</td>
+                  <td>$89.000</td>
+                </tr>
+                <tr class="total-row">
+                  <td colspan="4">Total estimado</td>
+                  <td>$1.114.000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header" onclick="this.closest('.project-card').querySelector('.project-details').classList.toggle('show')">
+            <div>
+              <div class="project-title">REM-002 — Pasillo central – Piso 2</div>
+              <div class="project-desc">Renovación de revestimientos, iluminación LED empotrada y nueva alfombra de pasillo.</div>
+              <div class="project-material-count" style="margin-top:8px">4 materiales</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:#999">PLANIFICADO</div>
+              <div class="project-cost">$1.081.500</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <div style="background:#f8f9fa;padding:12px;border-radius:6px;margin-bottom:12px;font-size:13px;color:#555">
+              <strong>Responsable:</strong> ARQ. JUAN PÉREZ | <strong>ID:</strong> REM-002
+            </div>
+            <table class="material-table">
+              <thead>
+                <tr>
+                  <th>Material</th>
+                  <th>Unidad</th>
+                  <th>Cantidad</th>
+                  <th>Costo unit.</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Revestimiento vinílico</td>
+                  <td>m²</td>
+                  <td>45</td>
+                  <td>$15.000</td>
+                  <td>$675.000</td>
+                </tr>
+                <tr>
+                  <td>Iluminación LED empotrada</td>
+                  <td>kit</td>
+                  <td>1</td>
+                  <td>$280.000</td>
+                  <td>$280.000</td>
+                </tr>
+                <tr>
+                  <td>Alfombra comercial</td>
+                  <td>metro</td>
+                  <td>40</td>
+                  <td>$28.000</td>
+                  <td>$1.120.000</td>
+                </tr>
+                <tr>
+                  <td>Moldura aluminio</td>
+                  <td>metro</td>
+                  <td>30</td>
+                  <td>$8.550</td>
+                  <td>$256.500</td>
+                </tr>
+                <tr class="total-row">
+                  <td colspan="4">Total estimado</td>
+                  <td>$2.331.500</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header" onclick="this.closest('.project-card').querySelector('.project-details').classList.toggle('show')">
+            <div>
+              <div class="project-title">REM-003 — Salón Los Almendros – Eventos</div>
+              <div class="project-desc">Conversión del salón de reuniones en sala multipropósito para eventos y conferencias de hasta 80 personas.</div>
+              <div class="project-material-count" style="margin-top:8px">6 materiales</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:#999">PLANIFICADO</div>
+              <div class="project-cost">$5.556.500</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <div style="background:#f8f9fa;padding:12px;border-radius:6px;margin-bottom:12px;font-size:13px;color:#555">
+              <strong>Responsable:</strong> ARQ. PATRICIA GARCÍA | <strong>ID:</strong> REM-003
+            </div>
+            <table class="material-table">
+              <thead>
+                <tr>
+                  <th>Material</th>
+                  <th>Unidad</th>
+                  <th>Cantidad</th>
+                  <th>Costo unit.</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Revestimiento acústico</td>
+                  <td>m²</td>
+                  <td>80</td>
+                  <td>$35.000</td>
+                  <td>$2.800.000</td>
+                </tr>
+                <tr>
+                  <td>Piso flotante comercial</td>
+                  <td>m²</td>
+                  <td>120</td>
+                  <td>$18.000</td>
+                  <td>$2.160.000</td>
+                </tr>
+                <tr>
+                  <td>Sistema iluminación LED profesional</td>
+                  <td>kit</td>
+                  <td>1</td>
+                  <td>$850.000</td>
+                  <td>$850.000</td>
+                </tr>
+                <tr>
+                  <td>Cortinajes motorizados</td>
+                  <td>unid</td>
+                  <td>4</td>
+                  <td>$320.000</td>
+                  <td>$1.280.000</td>
+                </tr>
+                <tr>
+                  <td>Pintura mural personalizada</td>
+                  <td>m²</td>
+                  <td>40</td>
+                  <td>$12.000</td>
+                  <td>$480.000</td>
+                </tr>
+                <tr>
+                  <td>Alfombra premium</td>
+                  <td>m²</td>
+                  <td>120</td>
+                  <td>$22.000</td>
+                  <td>$2.640.000</td>
+                </tr>
+                <tr class="total-row">
+                  <td colspan="4">Total estimado</td>
+                  <td>$10.210.000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
+
   <script src="../../js/main.js"></script>
 </body>
 </html>

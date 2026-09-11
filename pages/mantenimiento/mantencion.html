@@ -20,34 +20,352 @@
   <aside id="sideMenu" class="side-menu" aria-hidden="true">
     <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
     <nav class="side-nav">
-      <a href="../dashboard/index.html">Panel</a>
-      <a href="mantencion.html">Mantención</a>
-      <a href="mejoras.html">Mejoras</a>
-      <a href="remodelacion.html">Remodelación</a>
-      <a href="../auth/login.html" class="muted">Salir</a>
+      <a href="mantencion.html" class="active">Panel</a>
+      <a href="../inventario/inventario.html">Inventario</a>
+      <a href="../operaciones/recepcion.html">Recepción</a>
+      <a href="../movimientos/movimientos.html">Movimientos</a>
+      <a href="../../pages/auth/login.html" class="muted">Salir</a>
     </nav>
   </aside>
   <div id="overlay" class="overlay"></div>
+
   <main class="container">
-    <section class="grid two">
-      <div class="card">
-        <h2>Mantención Máquinas</h2>
-        <p>Anual, mensual, semanal (personal a cargo).</p>
+    <!-- Main Tabs -->
+    <div class="tabs-container">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="mantencion">Mantención General</button>
+        <button class="tab-btn" data-tab="mejoras">Mejoras</button>
+        <button class="tab-btn" data-tab="remodelacion">Remodelación</button>
       </div>
-      <div class="card">
-        <h2>Mantención Jardinería</h2>
-        <p>Temporadas invierno/verano según necesidades.</p>
+    </div>
+
+    <!-- Mantención Tab Content -->
+    <div id="mantencion" class="tab-content active">
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-subtab="maquinas">Máquinas</button>
+        <button class="sub-tab" data-subtab="jardineria">Jardinería</button>
+        <button class="sub-tab" data-subtab="reactiva">Reactiva</button>
+        <button class="sub-tab" data-subtab="obras">Obras</button>
       </div>
-      <div class="card">
-        <h2>Mantención Reactiva</h2>
-        <p>Emergencias: cambiar sifón, reparar taza de baño, etc.</p>
+
+      <!-- Máquinas -->
+      <div id="maquinas" class="subtab-content active">
+        <h3>— MANTENCIÓN DE MÁQUINAS</h3>
+        <div class="badge" style="margin-bottom:14px">ANUAL - 3 tareas</div>
+        
+        <div class="task-card">
+          <div class="task-id">M-001</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Revisión general sistema HVAC, cambio de filtros, calibración termostatos</h4>
+              <div class="task-badges">
+                <span class="badge badge-al-dia">AL DÍA</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal: Carlos Rivas</span>
+              <span class="task-date">15 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">M-002</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Inspección tableros eléctricos y prueba de circuitos diferencial</h4>
+              <div class="task-badges">
+                <span class="badge badge-pendiente">PENDIENTE</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal: Roberto Muñoz</span>
+              <span class="task-date">20 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">M-003</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Servicio preventivo ascensores — lubricación, frenos, cabina</h4>
+              <div class="task-badges">
+                <span class="badge badge-al-dia">AL DÍA</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal: Empresa Otis</span>
+              <span class="task-date">10 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="badge" style="margin:20px 0 14px;background:#fff3cd">MENSUAL - 3 tareas</div>
+
+        <div class="task-card">
+          <div class="task-id">M-004</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Revisión bomba de piscina y sistema de cloración</h4>
+              <div class="task-badges">
+                <span class="badge badge-al-dia">AL DÍA</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal: Pedro Soto</span>
+              <span class="task-date">5 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">M-005</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Limpieza filtros cocina y extractor industrial</h4>
+              <div class="task-badges">
+                <span class="badge badge-pendiente">PENDIENTE</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal: Carlos Rivas</span>
+              <span class="task-date">8 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="badge" style="margin:20px 0 14px;background:#cfd8f7">SEMANAL - 2 tareas</div>
+
+        <div class="task-card">
+          <div class="task-id">M-006</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Revisión niveles de agua cisternas y bombas de presión</h4>
+              <div class="task-badges">
+                <span class="badge badge-al-dia">AL DÍA</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal: Pedro Soto</span>
+              <span class="task-date">4 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">M-007</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Inspección visual calderas y calefones centrales</h4>
+              <div class="task-badges">
+                <span class="badge" style="background:#ffcdd2;color:#b71c1c">VENCIDO</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal: Carlos Rivas</span>
+              <span class="task-date">3 sept 2026</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <h2>Mantención Obras</h2>
-        <p>Pintar rejas, pequeñas reparaciones en áreas comunes.</p>
+
+      <!-- Jardinería -->
+      <div id="jardineria" class="subtab-content" style="display:none">
+        <h3>— MANTENCIÓN DE JARDINERÍA</h3>
+        <div class="badge" style="margin-bottom:14px">INVIERNO (Jun - Ago) - 5 tareas</div>
+        
+        <div class="task-card">
+          <div class="task-id">J-001</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Poda de formación en árboles y arbustos</h4>
+              <div class="task-badges">
+                <span class="badge badge-al-dia">AL DÍA</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal a cargo: Luis Herrera</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">J-002</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Fertilización de base con abono orgánico</h4>
+              <div class="task-badges">
+                <span class="badge badge-al-dia">AL DÍA</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal a cargo: Luis Herrera</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="badge" style="margin:20px 0 14px;background:#e8f5e9">VERANO (Sep - Mar) - 5 tareas</div>
+
+        <div class="task-card">
+          <div class="task-id">J-003</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Riego diario en zonas de césped y flores</h4>
+              <div class="task-badges">
+                <span class="badge badge-al-dia">AL DÍA</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal a cargo: Luis Herrera</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">J-004</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Control de plagas y fumigación preventiva</h4>
+              <div class="task-badges">
+                <span class="badge badge-al-dia">AL DÍA</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Personal a cargo: Luis Herrera</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+
+      <!-- Reactiva -->
+      <div id="reactiva" class="subtab-content" style="display:none">
+        <h3>— MANTENCIÓN REACTIVA — EMERGENCIAS</h3>
+        <div class="alert-info">⚡ Requiere acción inmediata. Al detectar el problema, registrar y asignar responsable el mismo día.</div>
+        
+        <div class="task-card">
+          <div class="task-id">R-001</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Cambio de sifón dañado — baño habitación 208</h4>
+              <div class="task-badges">
+                <span class="badge badge-urgente">URGENTE</span>
+                <span class="badge badge-resuelto">RESUELTO</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Piso 2 - Hab. 208</span>
+              <span class="task-date">6 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">R-002</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Reparación de taza de baño quebrada — baño común piso 1</h4>
+              <div class="task-badges">
+                <span class="badge badge-urgente">URGENTE</span>
+                <span class="badge badge-en-curso">EN CURSO</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Piso 1 - Baño común</span>
+              <span class="task-date">7 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">R-003</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Fuga de agua en llave de paso cocina</h4>
+              <div class="task-badges">
+                <span class="badge badge-urgente">URGENTE</span>
+                <span class="badge badge-pendiente">PENDIENTE</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Cocina principal</span>
+              <span class="task-date">8 sept 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Obras -->
+      <div id="obras" class="subtab-content" style="display:none">
+        <h3>— MANTENCIÓN DE OBRAS</h3>
+        
+        <div class="task-card">
+          <div class="task-id">O-001</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Pintar rejas del perímetro exterior</h4>
+              <div class="task-badges">
+                <span class="badge badge-pendiente">PENDIENTE</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Perímetro – Acceso principal</span>
+              <span class="task-date">15 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">O-002</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Reparación de baldosas sueltas en terraza</h4>
+              <div class="task-badges">
+                <span class="badge badge-en-curso">EN CURSO</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Terraza – Piso 2</span>
+              <span class="task-date">10 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">O-003</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Sellar fisuras en muro de contención jardín</h4>
+              <div class="task-badges">
+                <span class="badge badge-pendiente">PENDIENTE</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Jardín sur</span>
+              <span class="task-date">20 sept 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-id">O-004</div>
+          <div class="task-content">
+            <div class="task-header">
+              <h4 class="task-title">Pintura de cielos pasillo habitaciones piso 1</h4>
+              <div class="task-badges">
+                <span class="badge badge-completado">COMPLETADO</span>
+              </div>
+            </div>
+            <div class="task-footer">
+              <span class="task-location">Piso 1 - Pasillo</span>
+              <span class="task-date">3 sept 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
+
   <script src="../../js/main.js"></script>
 </body>
 </html>

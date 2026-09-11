@@ -20,26 +20,117 @@
   <aside id="sideMenu" class="side-menu" aria-hidden="true">
     <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
     <nav class="side-nav">
-      <a href="../dashboard/index.html">Panel</a>
+      <a href="mantencion.html">Panel</a>
       <a href="mantencion.html">Mantención</a>
-      <a href="mejoras.html">Mejoras</a>
+      <a href="mejoras.html" class="active">Mejoras</a>
       <a href="remodelacion.html">Remodelación</a>
       <a href="../auth/login.html" class="muted">Salir</a>
     </nav>
   </aside>
   <div id="overlay" class="overlay"></div>
+
   <main class="container">
-    <section class="grid two">
-      <div class="card">
-        <h2>Mejoras en Obras</h2>
-        <p>Arreglar zona de parrillas, construir pérgola, etc.</p>
+    <!-- Main Tabs -->
+    <div class="tabs-container">
+      <div class="tabs-nav">
+        <button class="tab-btn" data-tab="mantencion">Mantención General</button>
+        <button class="tab-btn active" data-tab="mejoras">Mejoras</button>
+        <button class="tab-btn" data-tab="remodelacion">Remodelación</button>
       </div>
-      <div class="card">
-        <h2>Mejoras Jardinería</h2>
-        <p>Proyectos de jardinería y zonas verdes.</p>
+    </div>
+
+    <!-- Mejoras Tab Content -->
+    <div id="mejoras" class="tab-content active">
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-subtab="proyectos-futuros">Proyectos futuros</button>
       </div>
-    </section>
+
+      <div id="proyectos-futuros" class="subtab-content active">
+        <h3>— MEJORAS EN OBRAS</h3>
+
+        <div class="project-card">
+          <div class="project-header" onclick="this.closest('.project-card').querySelector('.project-details').classList.toggle('show')">
+            <div>
+              <div class="project-title">MO-001 — Arreglar zona de parrillas</div>
+              <div class="project-desc">Rehabilitación completa de la zona BBQ: nuevas parrillas de acero inoxidable, mesones de hormigón y techo de madera.</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:#999">PLANIFICADO</div>
+              <div class="project-cost">$2.500.000</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <table class="material-table">
+              <thead>
+                <tr><th>Material</th><th>Unidad</th><th>Cantidad</th><th>Costo unit.</th><th>Subtotal</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Parrillas acero inox</td><td>unid</td><td>2</td><td>$800.000</td><td>$1.600.000</td></tr>
+                <tr><td>Mesón hormigón</td><td>m²</td><td>6</td><td>$120.000</td><td>$720.000</td></tr>
+                <tr><td>Techo madera</td><td>m²</td><td>20</td><td>$35.000</td><td>$700.000</td></tr>
+                <tr class="total-row"><td colspan="4">Total estimado:</td><td>$3.020.000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header" onclick="this.closest('.project-card').querySelector('.project-details').classList.toggle('show')">
+            <div>
+              <div class="project-title">MO-002 — Construir pérgola para jardín hotel</div>
+              <div class="project-desc">Pérgola de madera nativa tratada, 6×4 m, con sistema de iluminación LED y enredaderas. Zona de descanso para huéspedes.</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:#999">EN CURSO</div>
+              <div class="project-cost">$1.850.000</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <table class="material-table">
+              <thead>
+                <tr><th>Material</th><th>Unidad</th><th>Cantidad</th><th>Costo unit.</th><th>Subtotal</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Madera nativa tratada</td><td>m³</td><td>8</td><td>$180.000</td><td>$1.440.000</td></tr>
+                <tr><td>Iluminación LED</td><td>kit</td><td>1</td><td>$300.000</td><td>$300.000</td></tr>
+                <tr><td>Enredaderas ornamentales</td><td>unid</td><td>12</td><td>$25.000</td><td>$300.000</td></tr>
+                <tr class="total-row"><td colspan="4">Total estimado:</td><td>$2.040.000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <h3 style="margin-top:32px">— MEJORAS EN JARDINERÍA</h3>
+
+        <div class="project-card">
+          <div class="project-header" onclick="this.closest('.project-card').querySelector('.project-details').classList.toggle('show')">
+            <div>
+              <div class="project-title">MJ-001 — Renovación sistema de riego automático</div>
+              <div class="project-desc">Actualizar tuberías y válvulas para sistema de riego automático en zonas verdes. Instalar sensores de humedad para optimizar uso de agua.</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:#999">PLANIFICADO</div>
+              <div class="project-cost">$1.200.000</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <table class="material-table">
+              <thead>
+                <tr><th>Material</th><th>Unidad</th><th>Cantidad</th><th>Costo unit.</th><th>Subtotal</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Tuberías PVC</td><td>metro</td><td>150</td><td>$2.500</td><td>$375.000</td></tr>
+                <tr><td>Válvulas automáticas</td><td>unid</td><td>8</td><td>$65.000</td><td>$520.000</td></tr>
+                <tr><td>Sensores humedad</td><td>unid</td><td>6</td><td>$45.000</td><td>$270.000</td></tr>
+                <tr class="total-row"><td colspan="4">Total estimado:</td><td>$1.165.000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
+
   <script src="../../js/main.js"></script>
 </body>
 </html>

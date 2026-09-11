@@ -472,6 +472,79 @@ function inicializarContadores(){
   });
 }
 
+// ===== TABS Y SUB-TABS =====
+function inicializarTabs(){
+  // Main tabs - navegar a diferentes páginas
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', e => {
+      const tabName = btn.dataset.tab;
+      const currentPage = window.location.pathname.split('/').pop() || 'mantencion.html';
+      
+      // Determinar a qué página navegar
+      let targetPage = 'mantencion.html';
+      if(tabName === 'mejoras') targetPage = 'mejoras.html';
+      else if(tabName === 'remodelacion') targetPage = 'remodelacion.html';
+      
+      // Si ya estamos en esa página, no navegar
+      if(!currentPage.includes(targetPage)){
+        window.location.href = targetPage;
+      }
+    });
+  });
+  
+  // Marcar el tab actual como activo
+  const currentPage = window.location.pathname.split('/').pop() || 'mantencion.html';
+  tabBtns.forEach(btn => {
+    const tabName = btn.dataset.tab;
+    let isCurrentPage = false;
+    
+    if(tabName === 'mantencion' && currentPage.includes('mantencion.html')) isCurrentPage = true;
+    else if(tabName === 'mejoras' && currentPage.includes('mejoras.html')) isCurrentPage = true;
+    else if(tabName === 'remodelacion' && currentPage.includes('remodelacion.html')) isCurrentPage = true;
+    
+    if(isCurrentPage){
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  
+  // Sub-tabs - cambiar contenido dentro de la misma página
+  const subTabBtns = document.querySelectorAll('.sub-tab');
+  subTabBtns.forEach(btn => {
+    btn.addEventListener('click', e => {
+      const subtabName = btn.dataset.subtab;
+      const parent = btn.closest('.sub-tabs');
+      
+      if(!parent) return;
+      
+      // Ocultar todos los sub-tabs de este grupo
+      const container = btn.closest('.tab-content') || document.body;
+      const subtabContents = container.querySelectorAll('.subtab-content');
+      subtabContents.forEach(content => {
+        content.style.display = 'none';
+        content.classList.remove('active');
+      });
+      
+      // Remover clase active de todos los botones del grupo
+      const subBtnsInGroup = parent.querySelectorAll('.sub-tab');
+      subBtnsInGroup.forEach(b => b.classList.remove('active'));
+      
+      // Mostrar sub-tab seleccionado
+      const selectedSubtab = document.getElementById(subtabName);
+      if(selectedSubtab){
+        selectedSubtab.style.display = 'block';
+        selectedSubtab.classList.add('active');
+      }
+      
+      // Agregar clase active al botón
+      btn.classList.add('active');
+    });
+  });
+}
+
 // ===== INICIALIZACIÓN PRINCIPAL =====
 document.addEventListener('DOMContentLoaded', function(){
   inicializarTema();
@@ -502,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function(){
       return;
     }
     guardarEnLocalStorage('sesionUsuario', {nombre, rol: roleInput.value});
-    window.location.href = '../dashboard/index.html';
+    window.location.href = '../mantenimiento/mantencion.html';
   });
   
   actualizarRolVisible();
@@ -513,4 +586,5 @@ document.addEventListener('DOMContentLoaded', function(){
   inicializarRecepcion();
   inicializarMovimientos();
   inicializarContadores();
+  inicializarTabs();
 });

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Dashboard - Hotel Almendro</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
   <header class="site-header">
@@ -20,25 +20,25 @@
     <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
     <nav class="side-nav">
       <a href="index.html" class="active">Panel</a>
-      <a href="inventario.html">Inventario</a>
-      <a href="recepcion.html">Recepción</a>
-      <a href="movimientos.html">Movimientos</a>
-      <a href="login.html" class="muted">Salir</a>
+      <a href="../inventario/inventario.html">Inventario</a>
+      <a href="../operaciones/recepcion.html">Recepción</a>
+      <a href="../movimientos/movimientos.html">Movimientos</a>
+      <a href="../../pages/auth/login.html" class="muted">Salir</a>
     </nav>
   </aside>
   <div id="overlay" class="overlay"></div>
   <main class="container">
     <div class="hero">
     <section class="grid three">
-      <a class="card main-card mantencion" href="mantencion.html">
+      <a class="card main-card mantencion" href="../mantenimiento/mantencion.html">
         <h2>Mantención General</h2>
         <p>Accede a tareas periódicas y reactivas.</p>
       </a>
-      <a class="card main-card mejoras" href="mejoras.html">
+      <a class="card main-card mejoras" href="../mantenimiento/mejoras.html">
         <h2>Mejoras</h2>
         <p>Proyectos y mejoras futuras.</p>
       </a>
-      <a class="card main-card remodelacion" href="remodelacion.html">
+      <a class="card main-card remodelacion" href="../mantenimiento/remodelacion.html">
         <h2>Remodelaciones</h2>
         <p>Cambios en espacios existentes.</p>
       </a>
@@ -75,10 +75,17 @@
         </div>
       </div>
     </section>
+    <section class="stock-alerts card">
+      <div class="section-heading">
+        <div><h3>Alertas de inventario</h3><p>Productos próximos a alcanzar o bajo el stock mínimo.</p></div>
+        <a class="btn-secondary" href="../inventario/inventario.html">Ver inventario</a>
+      </div>
+      <div id="stockAlerts" class="stock-alert-list"></div>
+    </section>
     </div>
   </main>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="js/main.js"></script>
+  <script src="../../js/main.js"></script>
 </body>
 </html>

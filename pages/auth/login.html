@@ -4,9 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Login - Hotel Almendro</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
-</body>
 <body>
   <div class="auth-layout">
     <aside class="auth-left">
@@ -18,18 +17,26 @@
         <h1>Hotel Almendro</h1>
         <form id="loginForm" onsubmit="return false;">
           <label>Usuario</label>
-          <input type="text" placeholder="ingresa usuario">
+          <input id="username" type="text" placeholder="Ingresa tu nombre" required>
           <label>Contraseña</label>
-          <input type="password" placeholder="contraseña">
+          <input type="password" placeholder="Contraseña" required>
+          <label for="userRoleSelect">Rol</label>
+          <select id="userRoleSelect" required>
+            <option value="">Selecciona tu rol</option>
+            <option value="Admin">Admin</option>
+            <option value="Bodeguero">Bodeguero</option>
+            <option value="Recepción">Recepción</option>
+            <option value="Cocina">Cocina</option>
+          </select>
           <button id="loginBtn" class="btn">Entrar</button>
         </form>
-        <p class="muted">Esta cuenta aún no es funcional — el botón avanza al dashboard.</p>
+        <p class="muted">Selecciona el rol de la persona que ingresará al sistema.</p>
       </div>
     </aside>
     <aside class="auth-right">
       <!-- área derecha opcional para imagen/branding -->
     </aside>
   </div>
-  <script src="js/main.js"></script>
+  <script src="../../js/main.js"></script>
 </body>
 </html>

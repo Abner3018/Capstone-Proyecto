@@ -1,3 +1,37 @@
+// ===== TEMA =====
+function aplicarTema(tema){
+  const temaOscuro = tema === 'dark';
+  document.documentElement.dataset.theme = temaOscuro ? 'dark' : 'light';
+  document.documentElement.classList.toggle('dark-theme', temaOscuro);
+}
+
+aplicarTema(localStorage.getItem('temaHotelAlmendro') || 'light');
+
+function inicializarTema(){
+  const target = document.querySelector('.site-header') || document.querySelector('.auth-layout');
+  if(!target) return;
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'theme-toggle';
+  button.setAttribute('aria-label', 'Cambiar tema de color');
+  button.setAttribute('aria-pressed', document.documentElement.dataset.theme === 'dark' ? 'true' : 'false');
+
+  function actualizarTexto(){
+    button.textContent = document.documentElement.dataset.theme === 'dark' ? 'Modo blanco' : 'Modo oscuro';
+  }
+
+  button.addEventListener('click', () => {
+    const tema = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    aplicarTema(tema);
+    localStorage.setItem('temaHotelAlmendro', tema);
+    button.setAttribute('aria-pressed', tema === 'dark' ? 'true' : 'false');
+    actualizarTexto();
+  });
+  actualizarTexto();
+  target.appendChild(button);
+}
+
 // ===== DATOS GLOBALES =====
 const productosCatalogo = [
   {id:1, nombre:'Agua Embotellada 500ml', categoria:'bebidas', unidad:'botella', stock:50, minimo:20, precio:800},
@@ -17,8 +51,8 @@ let recepciones = [];
 
 // ===== FUNCIONES UTILITARIAS =====
 function getStockStatus(stock, minimo){
-  if(stock <= minimo * 0.5) return {clase:'status-critical', texto:'Crítico'};
-  if(stock <= minimo) return {clase:'status-low', texto:'Bajo'};
+  if(stock <= minimo) return {clase:'alert-danger', texto:'Peligro'};
+  if(stock <= minimo + 5) return {clase:'alert-watch', texto:'Vigilancia'};
   return {clase:'status-normal', texto:'Normal'};
 }
 
@@ -29,6 +63,25 @@ function guardarEnLocalStorage(key, data){
 function cargarDelLocalStorage(key, defecto=null){
   const data = localStorage.getItem(key);
   return data ? JSON.parse(data) : defecto;
+}
+
+function obtenerSesion(){
+  return cargarDelLocalStorage('sesionUsuario', null);
+}
+
+function actualizarRolVisible(){
+  const header = document.querySelector('.site-header');
+  const sesion = obtenerSesion();
+  if(!header || !sesion) return;
+
+  let roleBadge = document.getElementById('userRole');
+  if(!roleBadge){
+    roleBadge = document.createElement('span');
+    roleBadge.id = 'userRole';
+    roleBadge.className = 'user-role';
+    header.appendChild(roleBadge);
+  }
+  roleBadge.textContent = `${sesion.nombre} · ${sesion.rol}`;
 }
 
 // ===== MENU LATERAL =====
@@ -60,6 +113,7 @@ function inicializarMenu(){
   
   document.addEventListener('click', e=>{
     if(e.target.closest('.side-nav a')){
+      if(e.target.closest('a[href*="login.html"]')) localStorage.removeItem('sesionUsuario');
       closeMenuFn();
     }
   });
@@ -89,8 +143,8 @@ function inicializarInventario(){
     if(stockFilter.value){
       filtered = filtered.filter(p => {
         const status = getStockStatus(p.stock, p.minimo);
-        if(stockFilter.value === 'critico') return status.clase === 'status-critical';
-        if(stockFilter.value === 'bajo') return status.clase === 'status-low';
+        if(stockFilter.value === 'critico') return status.clase === 'alert-danger';
+        if(stockFilter.value === 'bajo') return status.clase === 'alert-watch';
         if(stockFilter.value === 'normal') return status.clase === 'status-normal';
         return true;
       });
@@ -113,12 +167,12 @@ function inicializarInventario(){
     }).join('');
     
     // Actualizar estadísticas
-    const totalStats = {total:0, critico:0, bajo:0, normal:0};
+    const totalStats = {total:0, peligro:0, vigilancia:0, normal:0};
     productosCatalogo.forEach(p => {
       totalStats.total++;
       const status = getStockStatus(p.stock, p.minimo);
-      if(status.clase === 'status-critical') totalStats.critico++;
-      else if(status.clase === 'status-low') totalStats.bajo++;
+      if(status.texto === 'Peligro') totalStats.peligro++;
+      else if(status.texto === 'Vigilancia') totalStats.vigilancia++;
       else totalStats.normal++;
     });
     
@@ -128,8 +182,8 @@ function inicializarInventario(){
     const normalEl = document.getElementById('normalCount');
     
     if(totalEl) totalEl.textContent = totalStats.total;
-    if(criticalEl) criticalEl.textContent = totalStats.critico;
-    if(lowEl) lowEl.textContent = totalStats.bajo;
+    if(criticalEl) criticalEl.textContent = totalStats.peligro;
+    if(lowEl) lowEl.textContent = totalStats.vigilancia;
     if(normalEl) normalEl.textContent = totalStats.normal;
   }
   
@@ -195,6 +249,7 @@ function inicializarRecepcion(){
     
     guardarEnLocalStorage('productosCatalogo', productosCatalogo);
     guardarEnLocalStorage('movimientos', movimientos);
+    guardarEnLocalStorage('recepciones', recepciones);
     
     alert('Entrada registrada correctamente');
     form.reset();
@@ -283,6 +338,120 @@ function inicializarMovimientos(){
   if(tipoFilter) tipoFilter.addEventListener('change', renderMovimientos);
 }
 
+// ===== PÁGINA: CRUD DE INVENTARIO =====
+function inicializarCrudInventario(){
+  const form = document.getElementById('productForm');
+  const productsBody = document.getElementById('crudProductsBody');
+  if(!form || !productsBody) return;
+
+  const editingId = document.getElementById('editingProductId');
+  const cancelButton = document.getElementById('cancelEdit');
+  const formTitle = document.getElementById('productFormTitle');
+  const unitSelect = document.getElementById('productUnit');
+  const stockLabel = document.getElementById('productStockLabel');
+
+  function actualizarEtiquetaCantidad(){
+    const unidad = unitSelect.value;
+    stockLabel.textContent = unidad ? `Cantidad actual (${unidad})` : 'Cantidad actual';
+  }
+
+  function limpiarFormulario(){
+    form.reset();
+    editingId.value = '';
+    formTitle.textContent = 'Agregar producto';
+    cancelButton.hidden = true;
+  }
+
+  function renderProductos(){
+    productsBody.innerHTML = productosCatalogo.map(producto => `
+      <tr>
+        <td>#${producto.id}</td>
+        <td>${producto.nombre}</td>
+        <td>${producto.categoria}</td>
+        <td>${producto.unidad}</td>
+        <td>${producto.stock}</td>
+        <td>${producto.minimo}</td>
+        <td>$${producto.precio.toLocaleString()}</td>
+        <td class="table-actions">
+          <button type="button" class="btn-small btn-edit" data-edit-id="${producto.id}">Editar</button>
+          <button type="button" class="btn-small btn-delete" data-delete-id="${producto.id}">Eliminar</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const productData = {
+      nombre: document.getElementById('productName').value.trim(),
+      categoria: document.getElementById('productCategory').value,
+      unidad: document.getElementById('productUnit').value.trim(),
+      stock: Number(document.getElementById('productStock').value),
+      minimo: Number(document.getElementById('productMinimum').value),
+      precio: Number(document.getElementById('productPrice').value)
+    };
+
+    if(editingId.value){
+      const producto = productosCatalogo.find(item => item.id === Number(editingId.value));
+      if(producto) Object.assign(producto, productData);
+    } else {
+      const nextId = productosCatalogo.reduce((maxId, item) => Math.max(maxId, item.id), 0) + 1;
+      productosCatalogo.push({id: nextId, ...productData});
+    }
+
+    guardarEnLocalStorage('productosCatalogo', productosCatalogo);
+    renderProductos();
+    limpiarFormulario();
+  });
+
+  productsBody.addEventListener('click', event => {
+    const editId = event.target.dataset.editId;
+    const deleteId = event.target.dataset.deleteId;
+    if(editId){
+      const producto = productosCatalogo.find(item => item.id === Number(editId));
+      if(!producto) return;
+      editingId.value = producto.id;
+      document.getElementById('productName').value = producto.nombre;
+      document.getElementById('productCategory').value = producto.categoria;
+      document.getElementById('productUnit').value = producto.unidad;
+      actualizarEtiquetaCantidad();
+      document.getElementById('productStock').value = producto.stock;
+      document.getElementById('productMinimum').value = producto.minimo;
+      document.getElementById('productPrice').value = producto.precio;
+      formTitle.textContent = 'Editar producto';
+      cancelButton.hidden = false;
+      form.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+    if(deleteId && confirm('¿Eliminar este producto del inventario?')){
+      const index = productosCatalogo.findIndex(item => item.id === Number(deleteId));
+      if(index !== -1) productosCatalogo.splice(index, 1);
+      guardarEnLocalStorage('productosCatalogo', productosCatalogo);
+      renderProductos();
+    }
+  });
+
+  cancelButton.addEventListener('click', limpiarFormulario);
+  unitSelect.addEventListener('change', actualizarEtiquetaCantidad);
+  renderProductos();
+}
+
+function inicializarAlertasInventario(){
+  const alertsContainer = document.getElementById('stockAlerts');
+  if(!alertsContainer) return;
+
+  const alertas = productosCatalogo
+    .map(producto => ({producto, alerta: getStockStatus(producto.stock, producto.minimo)}))
+    .filter(item => item.alerta.texto !== 'Normal')
+    .sort((a, b) => a.producto.stock - a.producto.minimo - (b.producto.stock - b.producto.minimo));
+
+  alertsContainer.innerHTML = alertas.length ? alertas.map(({producto, alerta}) => `
+    <div class="stock-alert ${alerta.clase}">
+      <div><strong>${alerta.texto}</strong><span>${producto.nombre}</span></div>
+      <span>${producto.stock} ${producto.unidad} / mínimo ${producto.minimo}</span>
+    </div>
+  `).join('') : '<p class="muted">No hay productos cerca del stock mínimo.</p>';
+}
+
 // ===== COUNTDOWN TIMERS =====
 function inicializarContadores(){
   function formatSeconds(s){
@@ -305,9 +474,11 @@ function inicializarContadores(){
 
 // ===== INICIALIZACIÓN PRINCIPAL =====
 document.addEventListener('DOMContentLoaded', function(){
+  inicializarTema();
   // Recuperar datos del localStorage
   const savedProducts = cargarDelLocalStorage('productosCatalogo');
   const savedMovimientos = cargarDelLocalStorage('movimientos', []);
+  const savedRecepciones = cargarDelLocalStorage('recepciones', []);
   
   if(savedProducts) {
     productosCatalogo.length = 0;
@@ -317,12 +488,28 @@ document.addEventListener('DOMContentLoaded', function(){
   if(savedMovimientos) {
     movimientos = savedMovimientos;
   }
+  if(savedRecepciones) {
+    recepciones = savedRecepciones;
+  }
   
   const loginBtn = document.getElementById('loginBtn');
-  if(loginBtn) loginBtn.addEventListener('click', () => window.location.href = 'index.html');
+  if(loginBtn) loginBtn.addEventListener('click', () => {
+    const nameInput = document.getElementById('username');
+    const roleInput = document.getElementById('userRoleSelect');
+    const nombre = nameInput?.value.trim();
+    if(!nombre || !roleInput?.value){
+      alert('Ingresa tu nombre y selecciona un rol.');
+      return;
+    }
+    guardarEnLocalStorage('sesionUsuario', {nombre, rol: roleInput.value});
+    window.location.href = '../dashboard/index.html';
+  });
   
+  actualizarRolVisible();
   inicializarMenu();
   inicializarInventario();
+  inicializarCrudInventario();
+  inicializarAlertasInventario();
   inicializarRecepcion();
   inicializarMovimientos();
   inicializarContadores();

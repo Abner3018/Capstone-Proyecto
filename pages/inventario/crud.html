@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CRUD Inventario - Hotel Almendro</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button id="menuBtn" class="menu-btn" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+    <div class="brand">Hotel Almendro</div>
+  </header>
+
+  <aside id="sideMenu" class="side-menu" aria-hidden="true">
+    <button id="closeMenu" class="side-close" aria-label="Cerrar menú">×</button>
+    <nav class="side-nav">
+      <a href="../dashboard/index.html">Panel</a>
+      <a href="inventario.html" class="active">Inventario</a>
+      <a href="crud.html" class="active">CRUD de productos</a>
+      <a href="../operaciones/recepcion.html">Recepción</a>
+      <a href="../movimientos/movimientos.html">Movimientos</a>
+      <a href="../auth/login.html" class="muted">Salir</a>
+    </nav>
+  </aside>
+  <div id="overlay" class="overlay"></div>
+
+  <main class="container">
+    <section class="page-header">
+      <h1>Administrar productos</h1>
+      <p>Agrega, edita o elimina productos del catálogo.</p>
+      <a class="btn-secondary inline-button" href="inventario.html">Volver al inventario</a>
+    </section>
+
+    <section class="card form-container">
+      <h2 id="productFormTitle">Agregar producto</h2>
+      <form id="productForm">
+        <input type="hidden" id="editingProductId">
+        <div class="form-row">
+          <div class="form-col"><label for="productName">Nombre</label><input id="productName" required></div>
+          <div class="form-col"><label for="productCategory">Categoría</label>
+            <select id="productCategory" required>
+              <option value="">Selecciona una categoría</option><option value="bebidas">Bebidas</option><option value="snacks">Snacks</option><option value="pan">Pan y Derivados</option><option value="lacteos">Lácteos</option><option value="frutas">Frutas y Verduras</option><option value="condimentos">Condimentos</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-col"><label for="productUnit">Unidad</label>
+            <select id="productUnit" required>
+              <option value="">Selecciona una unidad</option><option value="unidad">Unidad</option><option value="kg">Kilogramos (kg)</option><option value="litro">Litros</option><option value="botella">Botella</option><option value="paquete">Paquete</option><option value="pote">Pote</option>
+            </select>
+          </div>
+          <div class="form-col"><label id="productStockLabel" for="productStock">Cantidad actual</label><input id="productStock" type="number" min="0" step="0.01" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-col"><label for="productMinimum">Stock mínimo</label><input id="productMinimum" type="number" min="0" step="1" required></div>
+          <div class="form-col"><label for="productPrice">Precio unitario</label><input id="productPrice" type="number" min="0" step="1" required></div>
+        </div>
+        <button class="btn-primary" type="submit">Guardar producto</button>
+        <button class="btn-secondary" id="cancelEdit" type="button" hidden>Cancelar edición</button>
+      </form>
+    </section>
+
+    <section class="table-container card">
+      <table class="inventory-table">
+        <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Unidad</th><th>Stock</th><th>Mínimo</th><th>Precio</th><th>Acciones</th></tr></thead>
+        <tbody id="crudProductsBody"></tbody>
+      </table>
+    </section>
+  </main>
+  <script src="../../js/main.js"></script>
+</body>
+</html>

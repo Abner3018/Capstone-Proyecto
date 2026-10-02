@@ -1,0 +1,9 @@
+MANUAL DEMOSTRATIVO - CALDERA ACV
+
+Este archivo es una muestra de interfaz, no es un manual tecnico oficial ni fue entregado por el Hotel El Almendro.
+
+Equipo de referencia en la OMM: Caldera a gas ACV
+Ubicacion registrada: Sala de Caldera
+Fuente del registro: LISTA DE MANTENCIONES.xlsx
+
+Consulte siempre la documentacion oficial del fabricante y a personal autorizado para operar o mantener equipos a gas.

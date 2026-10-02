@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#26211d">
+  <title>Carta Gantt | Hotel El Almendro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="gantt.css">
+  <script defer src="../../js/omm-data.js"></script>
+  <script defer src="../../js/main.js"></script>
+  <script defer src="gantt.js"></script>
+</head>
+<body data-page="gantt">
+  <header class="masthead"><div class="masthead-inner"><p class="eyebrow">Área Obras · Mantención y Mejoras</p><h1>Hotel El Almendro</h1><div class="masthead-meta"><p>Gestión de infraestructura y proyectos</p><p class="date-stamp" id="currentDate"></p></div></div></header>
+  <nav class="main-nav" aria-label="Navegación principal">
+    <a class="nav-tab" data-page="dashboard" href="../../index.html"><strong>Dashboard</strong><small>Vista general</small></a>
+    <a class="nav-tab" data-page="gantt" href="index.html"><strong>Carta Gantt</strong><small>Cronograma y alertas</small></a>
+    <a class="nav-tab" data-page="mantencion" href="../mantencion-general/index.html"><strong>Mantención General</strong><small>Registros y tareas</small></a>
+    <a class="nav-tab" data-page="mejoras" href="../mejoras/index.html"><strong>Mejoras</strong><small>Proyectos y obras</small></a>
+    <a class="nav-tab" data-page="remodelacion" href="../remodelaciones/index.html"><strong>Remodelación</strong><small>Habitaciones y espacios</small></a>
+  </nav>
+  <main class="page-shell gantt-page">
+    <div class="view-heading"><div><h2>Carta Gantt</h2><p>Cronograma de periodos de proyectos y hitos de mantención registrados.</p></div></div>
+    <div class="gantt-toolbar">
+      <label class="gantt-filter" for="ganttFilter">Mostrar
+        <select id="ganttFilter">
+          <option value="todos">Todos</option>
+          <option value="mantencion">Mantención General</option>
+          <option value="mejoras">Mejoras</option>
+          <option value="remodelacion">Remodelaciones</option>
+        </select>
+      </label>
+      <p class="gantt-today" id="ganttToday"></p>
+      <p class="result-count" id="ganttCount" aria-live="polite"></p>
+    </div>
+    <p class="gantt-disclaimer"><strong>Lectura del cronograma:</strong> la nota de proyectos indica meses pero no años; se ubican por mes sin atribuirles un año concreto. Los registros de mantención fechados se muestran como hitos de revisión, no como duraciones. No se inventan fechas límite ausentes.</p>
+    <ul class="gantt-legend" aria-label="Leyenda de estados">
+      <li><i style="background:var(--green-text)"></i>Completado / Al día</li>
+      <li><i style="background:var(--blue-text)"></i>En curso / Hito</li>
+      <li><i style="background:var(--yellow-text)"></i>Pendiente / Próximo</li>
+      <li><i style="background:var(--red-text)"></i>Vencido</li>
+      <li><i style="background:var(--purple-text)"></i>Planificado</li>
+    </ul>
+    <section class="panel gantt-panel" aria-label="Cronograma mensual de OMM">
+      <div class="gantt-scroll">
+        <div class="gantt-layout">
+          <div class="gantt-head"><div class="gantt-head-label">OMM / Proyecto</div><div class="gantt-months" id="ganttMonths"></div></div>
+          <div id="ganttRows"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dialog class="gantt-modal" id="ganttDetail" aria-labelledby="ganttDetailTitle">
+    <div class="gantt-modal-head"><div><p class="eyebrow">Ficha técnica · Registro OMM</p><h2 id="ganttDetailTitle">Detalle OMM</h2><p class="gantt-modal-code" id="ganttDetailCode"></p></div><button class="gantt-modal-close" id="closeGanttDetail" type="button" aria-label="Cerrar detalle">×</button></div>
+    <div class="gantt-modal-body"><section class="gantt-detail-grid" id="ganttDetailFields"></section><section class="gantt-modal-section"><h3>Archivos adjuntos</h3><ul class="gantt-attachments" id="ganttAttachments"></ul></section></div>
+    <div class="gantt-modal-footer"><button class="gantt-button" id="doneGanttDetail" type="button">Cerrar</button></div>
+  </dialog>
+  <footer>Hotel El Almendro · Gestión de infraestructura · 2026</footer>
+</body>
+</html>

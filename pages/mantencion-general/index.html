@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#26211d">
+  <title>Mantención General | Hotel El Almendro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="mantencion.css">
+  <script defer src="../../js/omm-data.js"></script>
+  <script defer src="../../js/main.js"></script>
+  <script defer src="mantencion.js"></script>
+</head>
+<body data-page="mantencion">
+  <header class="masthead">
+    <div class="masthead-inner">
+      <p class="eyebrow">Área Obras · Mantención y Mejoras</p>
+      <h1>Hotel El Almendro</h1>
+      <div class="masthead-meta"><p>Gestión de infraestructura y proyectos</p><p class="date-stamp" id="currentDate"></p></div>
+    </div>
+  </header>
+  <nav class="main-nav" aria-label="Navegación principal">
+    <a class="nav-tab" data-page="dashboard" href="../../index.html"><strong>Dashboard</strong><small>Vista general</small></a>
+    <a class="nav-tab" data-page="gantt" href="../carta-gantt/index.html"><strong>Carta Gantt</strong><small>Cronograma y alertas</small></a>
+    <a class="nav-tab" data-page="mantencion" href="index.html"><strong>Mantención General</strong><small>Registros y tareas</small></a>
+    <a class="nav-tab" data-page="mejoras" href="../mejoras/index.html"><strong>Mejoras</strong><small>Proyectos y obras</small></a>
+    <a class="nav-tab" data-page="remodelacion" href="../remodelaciones/index.html"><strong>Remodelación</strong><small>Habitaciones y espacios</small></a>
+  </nav>
+
+  <main class="page-shell maintenance-page">
+    <div class="view-heading">
+      <div><h2>Mantención General</h2><p>Registro operativo de equipos, áreas exteriores y servicios de mantención.</p></div>
+      <button class="button button-primary" id="exportReport" type="button">Exportar reporte</button>
+    </div>
+    <div class="source-notice" role="note"><strong>Datos OMM:</strong> las fuentes no incluyen folio oficial, prioridad ni próxima fecha de vencimiento para la mayoría de los registros. Los campos ausentes se muestran como “No informado”; los archivos agregados aquí son locales a esta sesión.</div>
+
+    <div class="maintenance-tabs" role="tablist" aria-label="Categorías de mantención">
+      <button class="maintenance-tab active" type="button" role="tab" aria-selected="true" data-category="machines">Máquinas &amp; Equipos <span class="tab-count" data-count="machines">0</span></button>
+      <button class="maintenance-tab" type="button" role="tab" aria-selected="false" data-category="garden">Jardinería &amp; Exteriores <span class="tab-count" data-count="garden">0</span></button>
+      <button class="maintenance-tab" type="button" role="tab" aria-selected="false" data-category="reactive">Reactiva / Incidencias <span class="tab-count" data-count="reactive">0</span></button>
+      <button class="maintenance-tab" type="button" role="tab" aria-selected="false" data-category="history">Histórico / Resueltos <span class="tab-count" data-count="history">0</span></button>
+    </div>
+
+    <section class="panel maintenance-panel" aria-label="Registros de mantención">
+      <div class="table-toolbar">
+        <label class="search-control" for="maintenanceSearch"><span>Buscar</span><input id="maintenanceSearch" type="search" placeholder="Equipo, OMM, ubicación o responsable" autocomplete="off"></label>
+        <label class="filter-control" for="statusFilter">Estado
+          <select id="statusFilter">
+            <option value="Todos">Todos</option>
+            <option value="Pendiente">Pendientes</option>
+            <option value="Vencido">Vencidos</option>
+            <option value="Al día">Al día</option>
+          </select>
+        </label>
+        <p class="result-count" id="resultCount" aria-live="polite"></p>
+      </div>
+      <div class="maintenance-grid" id="maintenanceCards" aria-live="polite"></div>
+      <p class="empty-table" id="emptyTable" hidden>No hay registros que coincidan con estos filtros.</p>
+    </section>
+    <p class="source-note">Las fechas mostradas son las consignadas como fecha de realización en las planillas; no representan la fecha del próximo mantenimiento.</p>
+  </main>
+
+  <dialog class="omm-dialog" id="ommDialog" aria-labelledby="dialogTitle">
+    <div class="dialog-header">
+      <div><p class="eyebrow">Ficha técnica · Orden de mantención</p><h2 id="dialogTitle">Detalle OMM</h2><p class="dialog-code" id="dialogCode"></p></div>
+      <button class="icon-button" id="closeDialog" type="button" aria-label="Cerrar detalle">×</button>
+    </div>
+    <div class="dialog-content">
+      <section class="detail-grid" id="detailFields" aria-label="Datos del registro"></section>
+      <section class="dialog-section">
+        <div class="section-heading"><div><h3>Archivos adjuntos</h3><p id="attachmentHelp">No hay adjuntos originales en la fuente OMM.</p></div><label class="button button-secondary upload-button" for="attachmentInput">Añadir archivo</label><input id="attachmentInput" type="file" accept=".pdf,image/*" hidden></div>
+        <ul class="attachment-list" id="attachmentList"></ul>
+      </section>
+      <section class="dialog-section">
+        <div class="section-heading"><div><h3>Bitácora técnica</h3><p>Las notas se guardan en este navegador.</p></div></div>
+        <form id="noteForm" class="note-form"><label class="visually-hidden" for="noteInput">Nueva observación técnica</label><textarea id="noteInput" rows="3" maxlength="1000" placeholder="Añadir observación o trabajo realizado…"></textarea><button class="button button-secondary" type="submit">Guardar nota</button></form>
+        <ol class="note-list" id="noteList"></ol>
+      </section>
+      <section class="dialog-section status-editor" id="statusEditor" hidden>
+        <h3>Cambiar estado</h3>
+        <div class="status-edit-row"><label for="newStatus">Nuevo estado</label><select id="newStatus"><option>Al día</option><option>Pendiente</option><option>Vencido</option><option>En curso</option><option>Completado</option></select><button class="button button-primary" id="saveStatus" type="button">Guardar estado</button></div>
+      </section>
+    </div>
+    <div class="dialog-footer"><button class="button button-secondary" id="editStatus" type="button">Cambiar estado</button><button class="button button-primary" id="doneDialog" type="button">Cerrar</button></div>
+  </dialog>
+  <footer>Hotel El Almendro · Gestión de infraestructura · Mantención General</footer>
+</body>
+</html>

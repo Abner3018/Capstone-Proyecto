@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#26211d">
+  <title>Hotel El Almendro | Obras y Mantención</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="js/omm-data.js"></script>
+  <script defer src="js/main.js"></script>
+  <script defer src="js/dashboard.js"></script>
+</head>
+<body data-page="dashboard">
+  <header class="masthead">
+    <div class="masthead-inner">
+      <p class="eyebrow">Área Obras · Mantención y Mejoras</p>
+      <h1>Hotel El Almendro</h1>
+      <div class="masthead-meta">
+        <p>Gestión de infraestructura y proyectos</p>
+        <p class="date-stamp" id="currentDate"></p>
+      </div>
+    </div>
+  </header>
+
+  <nav class="main-nav" aria-label="Navegación principal">
+    <a class="nav-tab" data-page="dashboard" href="index.html"><strong>Dashboard</strong><small>Vista general</small></a>
+    <a class="nav-tab" data-page="gantt" href="pages/carta-gantt/index.html"><strong>Carta Gantt</strong><small>Cronograma y alertas</small></a>
+    <a class="nav-tab" data-page="mantencion" href="pages/mantencion-general/index.html"><strong>Mantención General</strong><small>Registros y tareas</small></a>
+    <a class="nav-tab" data-page="mejoras" href="pages/mejoras/index.html"><strong>Mejoras</strong><small>Proyectos y obras</small></a>
+    <a class="nav-tab" data-page="remodelacion" href="pages/remodelaciones/index.html"><strong>Remodelación</strong><small>Habitaciones y espacios</small></a>
+  </nav>
+
+  <main class="page-shell dashboard-view">
+    <div class="view-heading">
+      <div>
+        <h2>Resumen ejecutivo</h2>
+        <p>Indicadores calculados desde presupuestos y estados disponibles en las OMM revisadas.</p>
+      </div>
+      <label class="filter-control" for="areaFilter">Área visible
+        <select id="areaFilter">
+          <option value="Todas">Todas las áreas</option>
+          <option value="Obras">Obras y proyectos hotel</option>
+          <option value="Jardinería">Jardinería</option>
+          <option value="Remodelación">Remodelación</option>
+          <option value="Máquinas">Máquinas</option>
+          <option value="Climatización">Climatización</option>
+          <option value="Calderas">Calderas</option>
+          <option value="Gasfitería">Gasfitería</option>
+        </select>
+      </label>
+    </div>
+
+    <section class="kpi-grid" aria-label="Indicadores principales" aria-live="polite">
+      <article class="kpi-card">
+        <p class="kpi-title">Presupuesto total asignado</p>
+        <p class="kpi-value" id="kpiBudget">—</p>
+        <p class="kpi-subtext" id="kpiBudgetNote"></p>
+      </article>
+      <article class="kpi-card">
+        <p class="kpi-title">Proyectos en curso</p>
+        <p class="kpi-value" id="kpiProgress">—</p>
+        <p class="kpi-subtext" id="kpiProgressNote"></p>
+      </article>
+      <article class="kpi-card alert">
+        <p class="kpi-title">Alertas críticas</p>
+        <p class="kpi-value" id="kpiAlerts">—</p>
+        <p class="kpi-subtext">Vencidas o prioridad alta / urgente</p>
+      </article>
+      <article class="kpi-card">
+        <p class="kpi-title">Tareas preventivas al día</p>
+        <p class="kpi-value" id="kpiPreventive">—</p>
+        <p class="kpi-subtext" id="kpiPreventiveNote"></p>
+      </article>
+    </section>
+
+    <section class="charts-grid" aria-label="Gráficos de gestión">
+      <article class="panel">
+        <h3>Presupuesto por área</h3>
+        <p class="panel-caption">Incluye proyectos cerrados y remodelaciones con presupuesto documentado.</p>
+        <div class="chart-wrap">
+          <canvas class="chart-canvas" id="budgetChart" role="img" aria-label="Distribución del presupuesto por área"></canvas>
+          <p class="chart-fallback" hidden>Conéctate a internet para cargar los gráficos de Chart.js.</p>
+        </div>
+        <ul class="chart-legend" id="budgetLegend"></ul>
+      </article>
+      <article class="panel">
+        <h3>Estado global de tareas y OMM</h3>
+        <p class="panel-caption">Los registros sin estado informado se cuentan por separado.</p>
+        <div class="chart-wrap">
+          <canvas class="chart-canvas" id="statusChart" role="img" aria-label="Conteo de registros por estado"></canvas>
+          <p class="chart-fallback" hidden>Conéctate a internet para cargar los gráficos de Chart.js.</p>
+        </div>
+        <ul class="chart-legend" id="statusLegend"></ul>
+      </article>
+    </section>
+
+    <section class="panel full-panel">
+      <h3>Inversión por proyecto de remodelación</h3>
+      <p class="panel-caption">Totales con IVA consignados en las planillas de las habitaciones 201–204.</p>
+      <div class="chart-wrap short">
+        <canvas class="chart-canvas" id="remodelChart" role="img" aria-label="Presupuesto de remodelación por habitación"></canvas>
+        <p class="chart-fallback" hidden>Conéctate a internet para cargar los gráficos de Chart.js.</p>
+      </div>
+    </section>
+
+    <section class="dashboard-bottom">
+      <article class="panel">
+        <h3>Atención inmediata requerida</h3>
+        <p class="panel-caption">OMM vencidas o de prioridad alta / urgente explícita.</p>
+        <div id="alertList" aria-live="polite"></div>
+      </article>
+      <article class="panel">
+        <h3>Próximos periodos registrados</h3>
+        <p class="panel-caption">Los meses aparecen en las fuentes sin año ni día límite.</p>
+        <ul class="alert-list" id="upcomingList"></ul>
+      </article>
+    </section>
+
+    <p class="source-note">El presupuesto asignado considera proyectos no cerrados; los gráficos de área incluyen también proyectos completados y remodelaciones cuyo estado no está informado. El cumplimiento preventivo no se calcula sin fechas límite verificables.</p>
+  </main>
+
+  <footer>Hotel El Almendro · Gestión de infraestructura · Datos tomados de archivos OMM adjuntos</footer>
+</body>
+</html>

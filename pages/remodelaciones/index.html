@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#26211d">
+  <title>Remodelaciones | Hotel El Almendro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css"><link rel="stylesheet" href="remodelaciones.css">
+  <script defer src="../../js/omm-data.js"></script><script defer src="../../js/main.js"></script><script defer src="remodelaciones.js"></script>
+</head>
+<body data-page="remodelacion">
+  <header class="masthead"><div class="masthead-inner"><p class="eyebrow">Área Obras · Mantención y Mejoras</p><h1>Hotel El Almendro</h1><div class="masthead-meta"><p>Gestión de infraestructura y proyectos</p><p class="date-stamp" id="currentDate"></p></div></div></header>
+  <nav class="main-nav" aria-label="Navegación principal">
+    <a class="nav-tab" data-page="dashboard" href="../../index.html"><strong>Dashboard</strong><small>Vista general</small></a>
+    <a class="nav-tab" data-page="gantt" href="../carta-gantt/index.html"><strong>Carta Gantt</strong><small>Cronograma y alertas</small></a>
+    <a class="nav-tab" data-page="mantencion" href="../mantencion-general/index.html"><strong>Mantención General</strong><small>Registros y tareas</small></a>
+    <a class="nav-tab" data-page="mejoras" href="../mejoras/index.html"><strong>Mejoras</strong><small>Proyectos y obras</small></a>
+    <a class="nav-tab" data-page="remodelacion" href="index.html"><strong>Remodelación</strong><small>Habitaciones y espacios</small></a>
+  </nav>
+  <main class="page-shell renovation-page">
+    <div class="view-heading"><div><h2>Remodelaciones</h2><p>Presupuestos por habitación, estado de obra y OMM asociadas.</p></div></div>
+    <div class="source-notice"><strong>Integridad del presupuesto:</strong> las planillas documentan materiales y montos con IVA, pero no informan gasto ejecutado ni porcentaje físico. No se interpreta presupuesto asignado como gasto real.</div>
+    <section class="renovation-summary" aria-label="Resumen financiero">
+      <article class="summary-metric"><span>Presupuesto documentado</span><strong id="renovationBudget">—</strong><small id="renovationCount"></small></article>
+      <article class="summary-metric"><span>Presupuesto ejecutado</span><strong id="executedBudget">N/D</strong><small>Sin gasto ejecutado registrado en estas planillas</small></article>
+      <article class="summary-metric"><span>Avance físico cuantificado</span><strong id="physicalProgress">N/D</strong><small>Las fuentes no incluyen porcentajes de avance</small></article>
+    </section>
+    <section class="renovation-grid" id="renovationGrid" aria-label="Obras de remodelación"></section>
+    <section class="panel phase-panel">
+      <div class="view-heading"><div><h2>Fases y hitos</h2><p>Demolición, obra gruesa, terminaciones y equipamiento.</p></div></div>
+      <p class="source-note">Las OMM adjuntas no detallan fases, fechas ni avance por hito. El cronograma queda como estructura de seguimiento pendiente de completar.</p>
+      <div class="phase-grid" id="phaseGrid"></div>
+    </section>
+    <section class="panel evidence-panel">
+      <div class="view-heading"><div><h2>Registro fotográfico</h2><p>Agrega evidencia de antes y avance para la remodelación seleccionada.</p></div></div>
+      <div class="evidence-controls"><label for="evidenceProject">Proyecto<select id="evidenceProject"></select></label><label for="evidenceStage">Etapa<select id="evidenceStage"><option value="before">Antes</option><option value="progress">Después / Avance</option></select></label><label class="button button-secondary file-button" for="evidenceInput">Añadir imagen</label><input id="evidenceInput" type="file" accept="image/*" hidden></div>
+      <div class="gallery-grid"><section><h3>Antes</h3><div class="gallery-items" id="beforeGallery"></div></section><section><h3>Después / Avance</h3><div class="gallery-items" id="progressGallery"></div></section></div>
+      <p class="source-note">Las imágenes seleccionadas se muestran en esta sesión y no se envían a un servidor.</p>
+    </section>
+    <section class="panel related-panel">
+      <div class="view-heading"><div><h2>OMM asociadas</h2><p>Registros de remodelación y presupuestos presentes en la base compartida.</p></div></div>
+      <div class="related-list" id="relatedOmm"></div>
+    </section>
+  </main>
+  <footer>Hotel El Almendro · Gestión de infraestructura · Remodelaciones</footer>
+</body>
+</html>

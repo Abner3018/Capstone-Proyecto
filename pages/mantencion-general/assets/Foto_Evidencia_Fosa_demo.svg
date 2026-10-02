@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="title description">
+  <title id="title">Imagen demostrativa de evidencia de mantencion</title>
+  <desc id="description">Ilustracion de muestra, no es una fotografia del hotel ni de una fosa real.</desc>
+  <rect width="720" height="420" fill="#f5f0e6"/>
+  <rect x="34" y="34" width="652" height="352" rx="5" fill="#ffffff" stroke="#e2d7c5" stroke-width="2"/>
+  <path d="M90 280h540M130 280v-96h460v96M170 184v-38h380v38" fill="none" stroke="#26211d" stroke-width="12" stroke-linejoin="round"/>
+  <path d="M145 250h430M188 220h344" stroke="#b58d3d" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="180" cy="320" r="12" fill="#1b8a5a"/><circle cx="215" cy="320" r="12" fill="#1b8a5a"/><circle cx="250" cy="320" r="12" fill="#1b8a5a"/>
+  <text x="360" y="105" fill="#2c2520" font-family="Arial,sans-serif" font-size="25" font-weight="700" text-anchor="middle">EVIDENCIA DEMOSTRATIVA</text>
+  <text x="360" y="355" fill="#756a60" font-family="Arial,sans-serif" font-size="18" text-anchor="middle">Imagen de muestra · no corresponde a una foto del hotel</text>
+</svg>

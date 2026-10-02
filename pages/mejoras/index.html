@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#26211d">
+  <title>Mejoras | Hotel El Almendro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css"><link rel="stylesheet" href="mejoras.css">
+  <script defer src="../../js/omm-data.js"></script><script defer src="../../js/main.js"></script><script defer src="mejoras.js"></script>
+</head>
+<body data-page="mejoras">
+  <header class="masthead"><div class="masthead-inner"><p class="eyebrow">Área Obras · Mantención y Mejoras</p><h1>Hotel El Almendro</h1><div class="masthead-meta"><p>Gestión de infraestructura y proyectos</p><p class="date-stamp" id="currentDate"></p></div></div></header>
+  <nav class="main-nav" aria-label="Navegación principal">
+    <a class="nav-tab" data-page="dashboard" href="../../index.html"><strong>Dashboard</strong><small>Vista general</small></a>
+    <a class="nav-tab" data-page="gantt" href="../carta-gantt/index.html"><strong>Carta Gantt</strong><small>Cronograma y alertas</small></a>
+    <a class="nav-tab" data-page="mantencion" href="../mantencion-general/index.html"><strong>Mantención General</strong><small>Registros y tareas</small></a>
+    <a class="nav-tab" data-page="mejoras" href="index.html"><strong>Mejoras</strong><small>Proyectos y obras</small></a>
+    <a class="nav-tab" data-page="remodelacion" href="../remodelaciones/index.html"><strong>Remodelación</strong><small>Habitaciones y espacios</small></a>
+  </nav>
+  <main class="page-shell improvements-page">
+    <div class="view-heading"><div><h2>Mejoras de proyectos futuros</h2><p>Propuestas y presupuestos consignados en los documentos OMM del hotel.</p></div></div>
+    <section class="improvement-summary" aria-label="Resumen de presupuestos">
+      <article class="summary-metric"><span>Presupuesto documentado</span><strong id="requestedBudget">—</strong><small>Estimaciones consignadas para proyectos no cerrados</small></article>
+      <article class="summary-metric"><span>Aprobación formal</span><strong id="approvedBudget">N/D</strong><small>Las fuentes no identifican montos aprobados</small></article>
+      <article class="summary-metric"><span>Proyectos abiertos</span><strong id="openProjects">—</strong><small id="projectStatusSummary"></small></article>
+    </section>
+    <div class="source-notice"><strong>Alcance del dato:</strong> los montos se transcribieron del resumen de proyectos futuros; no se encontraron cotizaciones adjuntas ni una aprobación formal de presupuesto. Las cotizaciones que agregues quedan disponibles solo durante esta sesión.</div>
+    <div class="project-toolbar">
+      <label class="search-control" for="projectSearch"><span>Buscar proyecto</span><input id="projectSearch" type="search" placeholder="Nombre, área o responsable" autocomplete="off"></label>
+      <label class="filter-control" for="projectState"><span>Estado</span><select id="projectState"><option value="Todos">Todos</option><option value="En curso">En curso</option><option value="Pendiente">Pendiente</option><option value="Completado">Completado</option></select></label>
+      <p id="projectCount" aria-live="polite"></p>
+    </div>
+    <section class="project-grid" id="projectGrid" aria-label="Proyectos de mejora"></section>
+  </main>
+  <dialog class="quote-dialog" id="quoteDialog" aria-labelledby="quoteTitle">
+    <div class="quote-dialog-head"><div><p class="eyebrow">Propuesta y comparativa</p><h2 id="quoteTitle">Detalle del proyecto</h2><p id="quoteContext"></p></div><button class="icon-button" id="closeQuote" type="button" aria-label="Cerrar">×</button></div>
+    <div class="quote-dialog-body">
+      <section class="quote-section"><h3>Cotizaciones registradas</h3><div class="quote-table-wrap"><table class="quote-table"><thead><tr><th>Proveedor</th><th>Monto propuesto</th><th>Archivo</th></tr></thead><tbody id="quoteRows"></tbody></table></div><p class="empty-quotes" id="emptyQuotes">No hay cotizaciones proveedor por proveedor adjuntas en la fuente OMM.</p></section>
+      <form id="quoteForm" class="quote-form"><h3>Añadir propuesta</h3><div class="quote-form-grid"><label>Proveedor<input id="supplierName" type="text" maxlength="100" required placeholder="Nombre del proveedor"></label><label>Monto cotizado (CLP)<input id="quoteAmount" type="number" min="0" step="1" required></label><label class="file-picker">Archivo de cotización<input id="quoteFile" type="file" accept=".pdf,image/*"></label></div><button class="button button-primary" type="submit">Guardar propuesta en esta sesión</button></form>
+    </div>
+    <div class="quote-dialog-foot"><button class="button button-secondary" id="doneQuote" type="button">Cerrar</button></div>
+  </dialog>
+  <footer>Hotel El Almendro · Gestión de infraestructura · Proyectos futuros</footer>
+</body>
+</html>

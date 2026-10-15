@@ -67,7 +67,7 @@ function renderizarGantt() {
   const hoy = porcentajeHoy();
   document.getElementById('ganttToday').textContent = `Hoy · ${new Intl.DateTimeFormat('es-CL', { dateStyle: 'medium' }).format(hoyGantt)}`;
   document.getElementById('ganttCount').textContent = `${filas.length} ${filas.length === 1 ? 'registro' : 'registros'} con periodo o hito fechado`;
-  cuerpo.innerHTML = filas.length ? filas.map(({ registro, inicioMes, finMes, hito, dia, diasMes, anioDesconocido }) => {
+  cuerpo.innerHTML = filas.length ? filas.map(({ registro, inicioMes, finMes, hito, dia, diasMes }) => {
     const status = registro.estado || 'Estado no informado';
     const inicio = hito ? `Última revisión: ${fechaGantt(registro.fechaRealizacion)}` : `Mes ${mesesGantt[inicioMes - 1]}–${mesesGantt[finMes - 1]} · año no indicado`;
     const tituloBarra = `${registro.titulo} · ${inicio} · ${status}`;

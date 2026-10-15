@@ -45,10 +45,8 @@
 .quote-form { display: grid; gap: 10px; margin-top: 11px; }
 .quote-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .quote-form label { display: grid; gap: 4px; color: var(--text-muted); font-size: .67rem; font-weight: 700; }
-.quote-form .file-picker { grid-column: 1 / -1; }
-.quote-form input[type="file"] { padding: 7px; }
 .quote-form .button { justify-self: end; }
 .quote-dialog-foot { display: flex; justify-content: end; padding: 10px 19px; background: #fff; border-top: 1px solid var(--border-color); }
 @media (max-width: 720px) { .project-grid { grid-template-columns: 1fr; } .improvement-summary { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 500px) { .improvement-summary { grid-template-columns: 1fr; } .project-toolbar { align-items: stretch; } #projectCount { margin: 0; } .project-card-bottom { align-items: start; flex-direction: column; } .quote-form-grid { grid-template-columns: 1fr; } .quote-form .file-picker { grid-column: auto; } }
+@media (max-width: 500px) { .improvement-summary { grid-template-columns: 1fr; } .project-toolbar { align-items: stretch; } #projectCount { margin: 0; } .project-card-bottom { align-items: start; flex-direction: column; } .quote-form-grid { grid-template-columns: 1fr; } }
 @media print { .masthead, .main-nav, .project-toolbar, .button, .quote-dialog, .source-notice { display: none !important; } .project-grid { grid-template-columns: 1fr 1fr; } .page-shell { width: 100%; padding: 0; } }

@@ -1,16 +1,14 @@
 {
   "hosting": {
-    "public": "hotel",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      "**/node_modules/**",
+      "**/.venv/**",
+      "**/venv/**",
+      "**/*.rar",
+      "**/*.zip"
     ]
   }
 }

@@ -52,14 +52,13 @@ function abrirComparativa(proyecto) {
   document.getElementById('quoteContext').textContent = `${proyecto.categoria} · ${proyecto.periodo || 'Periodo no informado'} · ${proyecto.responsable || 'Responsable no informado'}`;
   document.getElementById('supplierName').value = '';
   document.getElementById('quoteAmount').value = '';
-  document.getElementById('quoteFile').value = '';
   renderizarCotizaciones();
   document.getElementById('quoteDialog').showModal();
 }
 
 function renderizarCotizaciones() {
   const cotizaciones = cotizacionesLocales.get(proyectoActivo.id) || [];
-  document.getElementById('quoteRows').innerHTML = cotizaciones.map(cotizacion => `<tr><td>${escaparMejoras(cotizacion.proveedor)}</td><td>${formatoMontoMejoras.format(cotizacion.monto)}</td><td>${cotizacion.archivo ? `<a href="${escaparMejoras(cotizacion.url)}" download="${escaparMejoras(cotizacion.archivo)}">${escaparMejoras(cotizacion.archivo)}</a>` : 'Sin archivo'}</td></tr>`).join('');
+  document.getElementById('quoteRows').innerHTML = cotizaciones.map(cotizacion => `<tr><td>${escaparMejoras(cotizacion.proveedor)}</td><td>${formatoMontoMejoras.format(cotizacion.monto)}</td></tr>`).join('');
   document.getElementById('emptyQuotes').hidden = cotizaciones.length > 0;
 }
 
@@ -76,13 +75,10 @@ document.getElementById('doneQuote').addEventListener('click', () => document.ge
 document.getElementById('quoteForm').addEventListener('submit', evento => {
   evento.preventDefault();
   if (!proyectoActivo) return;
-  const archivo = document.getElementById('quoteFile').files[0];
   const cotizaciones = cotizacionesLocales.get(proyectoActivo.id) || [];
   cotizaciones.push({
     proveedor: document.getElementById('supplierName').value.trim(),
-    monto: Number(document.getElementById('quoteAmount').value),
-    archivo: archivo?.name || null,
-    url: archivo ? URL.createObjectURL(archivo) : null
+    monto: Number(document.getElementById('quoteAmount').value)
   });
   cotizacionesLocales.set(proyectoActivo.id, cotizaciones);
   renderizarCotizaciones();

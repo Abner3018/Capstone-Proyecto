@@ -8,13 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../css/styles.css">
-  <link rel="stylesheet" href="mantencion.css">
-  <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-  <script type="module" src="../../js/firebase-config.js"></script>
-  <script defer src="../../js/omm-data.js"></script>
-  <script defer src="../../js/main.js"></script>
-  <script defer src="mantencion.js"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/pages/mantencion-general/mantencion.css">
+  <script type="module" src="/js/firebase-config.js"></script>
+  <script defer src="/js/omm-data.js"></script>
+  <script defer src="/js/main.js"></script>
+  <script defer src="/pages/mantencion-general/mantencion.js"></script>
 </head>
 <body data-page="mantencion">
   <header class="masthead">
@@ -25,11 +24,11 @@
     </div>
   </header>
   <nav class="main-nav" aria-label="Navegación principal">
-    <a class="nav-tab" data-page="dashboard" href="../../index.html"><strong>Dashboard</strong><small>Vista general</small></a>
-    <a class="nav-tab" data-page="gantt" href="../carta-gantt/index.html"><strong>Carta Gantt</strong><small>Cronograma y alertas</small></a>
-    <a class="nav-tab" data-page="mantencion" href="index.html"><strong>Mantención General</strong><small>Registros y tareas</small></a>
-    <a class="nav-tab" data-page="mejoras" href="../mejoras/index.html"><strong>Mejoras</strong><small>Proyectos y obras</small></a>
-    <a class="nav-tab" data-page="remodelacion" href="../remodelaciones/index.html"><strong>Remodelación</strong><small>Habitaciones y espacios</small></a>
+    <a class="nav-tab" data-page="dashboard" href="/index.html"><strong>Dashboard</strong><small>Vista general</small></a>
+    <a class="nav-tab" data-page="gantt" href="/pages/gantt/index.html"><strong>Carta Gantt</strong><small>Cronograma y alertas</small></a>
+    <a class="nav-tab" data-page="mantencion" href="/pages/mantencion-general/index.html"><strong>Mantención General</strong><small>Registros y tareas</small></a>
+    <a class="nav-tab" data-page="mejoras" href="/pages/mejoras/index.html"><strong>Mejoras</strong><small>Proyectos y obras</small></a>
+    <a class="nav-tab" data-page="remodelacion" href="/pages/remodelacion/index.html"><strong>Remodelación</strong><small>Habitaciones y espacios</small></a>
   </nav>
 
   <main class="page-shell maintenance-page">
@@ -65,7 +64,6 @@
           </select>
         </label>
         <p class="result-count" id="resultCount" aria-live="polite"></p>
-        <button class="button button-secondary" id="importMaintenanceButton" type="button">Importar (.xlsx / .csv)</button>
         <button class="button button-primary" id="newMaintenanceButton" type="button">+ Nueva Mantención</button>
       </div>
       <div class="maintenance-grid" id="maintenanceCards" aria-live="polite"></div>
@@ -106,25 +104,6 @@
         <button class="button button-primary" id="saveNewMaintenance" type="submit">Guardar mantención</button>
       </div>
     </form>
-  </dialog>
-
-  <dialog class="omm-dialog import-dialog" id="importMaintenanceDialog" aria-labelledby="importMaintenanceTitle">
-    <div class="dialog-header">
-      <div><p class="eyebrow">Carga masiva · Mantención General</p><h2 id="importMaintenanceTitle">Importar mantenciones</h2></div>
-      <button class="icon-button" id="closeImportMaintenance" type="button" aria-label="Cerrar importación">×</button>
-    </div>
-    <div class="dialog-content import-content">
-      <p class="import-description">El archivo debe incluir una columna Categoría y los campos de la categoría que se importa. Cada fila se guardará en su colección correspondiente.</p>
-      <label class="maintenance-form-field" for="importFileInput">Archivo Excel o CSV
-        <input id="importFileInput" type="file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-      </label>
-      <button class="button button-secondary" id="downloadImportTemplate" type="button">Descargar plantilla CSV</button>
-      <p class="import-result" id="importResult" role="status" aria-live="polite" hidden></p>
-    </div>
-    <div class="dialog-footer">
-      <button class="button button-secondary" id="cancelImportMaintenance" type="button">Cerrar</button>
-      <button class="button button-primary" id="startImportMaintenance" type="button" disabled>Importar archivo</button>
-    </div>
   </dialog>
 
   <dialog class="omm-dialog" id="ommDialog" aria-labelledby="dialogTitle">

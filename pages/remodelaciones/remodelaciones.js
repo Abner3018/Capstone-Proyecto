@@ -1,6 +1,5 @@
 const formatoMontoObra = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
 let obrasRemodelacion = [];
-const evidenciaLocal = [];
 
 function escaparObra(valor) {
   return String(valor ?? '').replace(/[&<>"']/g, caracter => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[caracter]);
@@ -49,40 +48,16 @@ function renderizarObras() {
   );
   document.getElementById('phaseGrid').innerHTML = fases.length
     ? fases.map(fase => `<article class="phase-step"><span>${escaparObra(fase.proyecto)}</span><strong>${escaparObra(fase.titulo || fase.nombre || 'Fase')}</strong><small>${escaparObra(fase.estado || 'Estado no informado')}</small></article>`).join('')
-    : '<p class="gallery-empty">No hay fases ni hitos registrados.</p>';
+    : '<p class="phase-empty">No hay fases ni hitos registrados.</p>';
   document.getElementById('relatedOmm').innerHTML = obrasRemodelacion.map(obra => `
     <div class="related-item"><div><strong>${escaparObra(obra.titulo)}</strong><small>${escaparObra(obra.codigoOMM || `Folio no informado · ID ${obra.id}`)} · ${escaparObra(obra.ubicacion)}</small></div><span class="status-badge ${formatoEstadoObra(obra.estado)}">${escaparObra(obra.estado || 'Sin estado')}</span></div>`).join('');
-  document.getElementById('evidenceProject').innerHTML = obrasRemodelacion.map(obra => `<option value="${escaparObra(obra.id)}">${escaparObra(obra.titulo)}</option>`).join('');
 }
 
-function renderizarGaleria() {
-  for (const etapa of ['before', 'progress']) {
-    const destino = document.getElementById(etapa === 'before' ? 'beforeGallery' : 'progressGallery');
-    const imagenes = evidenciaLocal.filter(imagen => imagen.etapa === etapa && imagen.proyecto === document.getElementById('evidenceProject').value);
-    destino.innerHTML = imagenes.length ? imagenes.map(imagen => `<figure class="gallery-figure"><img src="${escaparObra(imagen.url)}" alt="${escaparObra(imagen.nombre)}"><figcaption>${escaparObra(imagen.nombre)}</figcaption></figure>`).join('')
-      : '<p class="gallery-empty">No hay fotos cargadas en esta sesión.</p>';
-  }
-}
-
-document.getElementById('evidenceInput').addEventListener('change', evento => {
-  const archivo = evento.target.files[0];
-  if (!archivo || !archivo.type.startsWith('image/')) return;
-  evidenciaLocal.push({
-    proyecto: document.getElementById('evidenceProject').value,
-    etapa: document.getElementById('evidenceStage').value,
-    nombre: archivo.name,
-    url: URL.createObjectURL(archivo)
-  });
-  renderizarGaleria();
-  evento.target.value = '';
-});
-document.getElementById('evidenceProject').addEventListener('change', renderizarGaleria);
 function sincronizarObras() {
   obrasRemodelacion = ommData.filter(registro =>
     registro.categoria === 'Remodelación' && ['proyecto', 'remodelacion'].includes(registro.tipo)
   );
   renderizarObras();
-  renderizarGaleria();
 }
 
 sincronizarObras();

@@ -93,12 +93,6 @@
 .new-maintenance-dialog { width: min(620px, calc(100vw - 24px)); }
 .new-maintenance-dialog form { margin: 0; }
 .new-maintenance-content { max-height: calc(88vh - 175px); }
-.import-dialog { width: min(620px, calc(100vw - 24px)); }
-.import-content { max-height: calc(88vh - 150px); }
-.import-description { margin: 0 0 14px; color: var(--text-muted); font-size: .76rem; line-height: 1.5; }
-.import-content > .button { margin-top: 12px; }
-.import-result { margin: 14px 0 0; padding: 10px 11px; color: var(--blue-text); background: #eef4f5; border: 1px solid #cbdde0; border-radius: 3px; font-size: .73rem; line-height: 1.45; white-space: pre-line; }
-.import-result.is-error { color: var(--red-text); background: var(--red-bg); border-color: var(--red-border); }
 .maintenance-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
 .category-fields-hint { margin: 0; padding: 12px; color: var(--text-muted); background: #faf8f5; border: 1px dashed var(--border-color); border-radius: 3px; font-size: .74rem; line-height: 1.5; }
 .maintenance-form-field { display: grid; min-width: 0; gap: 5px; color: var(--text-muted); font-size: .69rem; font-weight: 700; }

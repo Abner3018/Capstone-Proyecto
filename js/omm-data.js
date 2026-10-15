@@ -1,5 +1,18 @@
 var ommData = window.ommData = [];
 window.ommDataLoaded = false;
+window.ommDataCollectionsLoaded = [];
+
+const coleccionesMantencion = [
+  { nombre: 'alcantarillado', categoria: 'Alcantarillado' },
+  { nombre: 'baño', categoria: 'Baño' },
+  { nombre: 'bodega', categoria: 'Bodega' },
+  { nombre: 'jardineria', categoria: 'Jardinería' },
+  { nombre: 'maquina', categoria: 'Máquinas' },
+  { nombre: 'puertas', categoria: 'Puertas' },
+  { nombre: 'radiador', categoria: 'Radiador' },
+  { nombre: 'refrigerador', categoria: 'Refrigerador' },
+  { nombre: 'televisionespilas', categoria: 'Televisiones / Pilas' }
+];
 
 function leerCampo(documento, ...campos) {
   for (const campo of campos) {
@@ -12,10 +25,11 @@ function leerCampo(documento, ...campos) {
 
 function normalizarFecha(valor) {
   if (!valor) return null;
-  if (typeof valor.toDate === 'function') return valor.toDate().toISOString().slice(0, 10);
-  if (valor instanceof Date) return valor.toISOString().slice(0, 10);
-  const fecha = String(valor);
-  return /^\d{4}-\d{2}-\d{2}/.test(fecha) ? fecha.slice(0, 10) : fecha;
+  if (typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(valor)) return valor;
+  const fecha = typeof valor.toDate === 'function' ? valor.toDate() : valor instanceof Date ? valor : new Date(valor);
+  return Number.isNaN(fecha.getTime())
+    ? String(valor)
+    : `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
 }
 
 function normalizarMonto(valor) {
@@ -38,28 +52,36 @@ function normalizarEstado(valor) {
   return estados[estado.toLocaleLowerCase('es-CL')] || estado;
 }
 
-function normalizarRegistro(documento) {
+function normalizarRegistro(documento, coleccion) {
   const datos = documento.data();
   const presupuesto = leerCampo(datos, 'presupuesto', 'costo_presupuestado', 'costoPresupuestado', 'budget');
-  const categoria = leerCampo(datos, 'categoria', 'category', 'area') || 'Mantención General';
   const estado = normalizarEstado(leerCampo(datos, 'estado', 'status'));
   const frecuencia = leerCampo(datos, 'frecuencia', 'frequency');
-  const fechaLimite = normalizarFecha(leerCampo(datos, 'fechaLimite', 'fecha_limite', 'dueDate'));
+  const fechaLimite = normalizarFecha({
+    bodega: leerCampo(datos, 'inventariadofecha'),
+    puertas: leerCampo(datos, 'fechaultimamantencion'),
+    maquina: leerCampo(datos, 'fechamantencion')
+  }[coleccion.nombre] || leerCampo(datos, 'fecha', 'fechaLimite', 'fecha_limite', 'dueDate'));
   const tipo = String(leerCampo(datos, 'tipo', 'type') || 'mantencion').toLocaleLowerCase('es-CL');
+  const lugar = leerCampo(datos, 'lugar');
+  const numero = leerCampo(datos, 'numero');
 
   return {
     ...datos,
     id: documento.id,
+    coleccion: coleccion.nombre,
+    tipoMantencion: coleccion.nombre === 'baño' ? leerCampo(datos, 'tipo') : null,
     codigoOMM: leerCampo(datos, 'codigoOMM', 'codigo_omm', 'folioOMM', 'folio_omm', 'folio', 'code'),
-    titulo: leerCampo(datos, 'titulo', 'elemento', 'title', 'nombre') || 'Registro sin título',
-    categoria,
-    ubicacion: leerCampo(datos, 'ubicacion', 'location'),
+    titulo: leerCampo(datos, 'nombrecompleto', 'titulo', 'elemento', 'title', 'nombre') ||
+      [lugar, numero].filter(Boolean).join(' ') || `Mantención · ${coleccion.categoria}`,
+    categoria: coleccion.categoria,
+    ubicacion: leerCampo(datos, 'ubicacion', 'location') || [lugar, numero].filter(Boolean).join(' ') || null,
     estado,
     prioridad: leerCampo(datos, 'prioridad', 'priority'),
     presupuesto: normalizarMonto(presupuesto),
     presupuestoEjecutado: normalizarMonto(leerCampo(datos, 'presupuestoEjecutado', 'presupuesto_ejecutado')),
     responsable: leerCampo(datos, 'responsable', 'assignedTo'),
-    descripcion: leerCampo(datos, 'descripcion', 'description') || '',
+    descripcion: leerCampo(datos, 'detalle', 'descripcion', 'description') || '',
     proveedor: leerCampo(datos, 'proveedor', 'vendor'),
     origen: leerCampo(datos, 'origen', 'fuente', 'source'),
     archivosAdjuntos: Array.isArray(datos.archivosAdjuntos)
@@ -83,30 +105,17 @@ function fechaCreacionMillis(documento) {
   return Number.isNaN(valor) ? null : valor;
 }
 
-function normalizarRegistros(snapshot) {
-  const documentos = [...snapshot.docs].sort((a, b) => {
-    const fechaA = fechaCreacionMillis(a);
-    const fechaB = fechaCreacionMillis(b);
-    if (fechaA !== null && fechaB !== null && fechaA !== fechaB) return fechaA - fechaB;
-    if (fechaA !== null && fechaB === null) return -1;
-    if (fechaA === null && fechaB !== null) return 1;
-    return a.id.localeCompare(b.id);
-  });
-  const registros = documentos.map(normalizarRegistro);
-  const usados = new Set(registros
-    .map(registro => Number(registro.idSecuencial))
-    .filter(numero => Number.isSafeInteger(numero) && numero > 0));
-  let siguienteDisponible = 1;
-
-  registros.forEach(registro => {
-    const guardado = Number(registro.idSecuencial);
-    if (Number.isSafeInteger(guardado) && guardado > 0) return;
-    while (usados.has(siguienteDisponible)) siguienteDisponible += 1;
-    registro.idSecuencial = siguienteDisponible;
-    usados.add(siguienteDisponible);
-    siguienteDisponible += 1;
-  });
-  return registros;
+function normalizarRegistros(snapshot, coleccion) {
+  return [...snapshot.docs]
+    .sort((a, b) => {
+      const fechaA = fechaCreacionMillis(a);
+      const fechaB = fechaCreacionMillis(b);
+      if (fechaA !== null && fechaB !== null && fechaA !== fechaB) return fechaA - fechaB;
+      if (fechaA !== null && fechaB === null) return -1;
+      if (fechaA === null && fechaB !== null) return 1;
+      return a.id.localeCompare(b.id);
+    })
+    .map(documento => normalizarRegistro(documento, coleccion));
 }
 
 function publicarErrorFirestore(error) {
@@ -114,20 +123,54 @@ function publicarErrorFirestore(error) {
   window.dispatchEvent(new CustomEvent('omm-data-error', { detail: error }));
 }
 
-let firestoreListenerStarted = false;
+let firestoreConnectionStarted = false;
+const coleccionesConListener = new Set();
+const coleccionesRecibidas = new Set();
+const registrosPorColeccion = new Map();
 
-function conectarFirestore() {
-  if (firestoreListenerStarted) return;
-  firestoreListenerStarted = true;
+function publicarRegistrosActualizados() {
+  window.ommData = ommData = coleccionesMantencion.flatMap(coleccion =>
+    registrosPorColeccion.get(coleccion.nombre) || []
+  );
+  window.ommDataCollectionsLoaded = [...coleccionesRecibidas];
+  window.ommDataLoaded = document.body.dataset.page === 'mantencion'
+    ? coleccionesRecibidas.size > 0
+    : coleccionesRecibidas.size === coleccionesMantencion.length;
+  window.dispatchEvent(new CustomEvent('omm-data-updated', { detail: window.ommData }));
+}
+
+function cargarColeccionMantencion(nombreColeccion) {
+  const coleccion = coleccionesMantencion.find(item => item.nombre === nombreColeccion);
+  if (!coleccion) throw new Error(`La colección de mantención "${nombreColeccion}" no está configurada.`);
   if (!window.db || !window.firebaseApi) {
     publicarErrorFirestore(new Error('Firestore no está inicializado correctamente.'));
     return;
   }
-  window.firebaseApi.onSnapshot(window.firebaseApi.collection(window.db, 'mantencion_general'), snapshot => {
-    window.ommData = ommData = normalizarRegistros(snapshot);
-    window.ommDataLoaded = true;
-    window.dispatchEvent(new CustomEvent('omm-data-updated', { detail: window.ommData }));
-  }, publicarErrorFirestore);
+  if (coleccionesConListener.has(nombreColeccion)) return;
+  coleccionesConListener.add(nombreColeccion);
+  window.firebaseApi.onSnapshot(
+    window.firebaseApi.collection(window.db, coleccion.nombre),
+    snapshot => {
+      registrosPorColeccion.set(coleccion.nombre, normalizarRegistros(snapshot, coleccion));
+      coleccionesRecibidas.add(coleccion.nombre);
+      publicarRegistrosActualizados();
+    },
+    error => publicarErrorFirestore(error)
+  );
+}
+
+function conectarFirestore() {
+  if (firestoreConnectionStarted) return;
+  if (!window.db || !window.firebaseApi) {
+    publicarErrorFirestore(new Error('Firestore no está inicializado correctamente.'));
+    return;
+  }
+  firestoreConnectionStarted = true;
+  window.cargarColeccionMantencion = cargarColeccionMantencion;
+  const coleccionesIniciales = document.body.dataset.page === 'mantencion'
+    ? [coleccionesMantencion[0]]
+    : coleccionesMantencion;
+  coleccionesIniciales.forEach(coleccion => cargarColeccionMantencion(coleccion.nombre));
 }
 
 window.addEventListener('firebase-ready', conectarFirestore, { once: true });
@@ -139,7 +182,7 @@ if (window.db && window.firebaseApi) {
   conectarFirestore();
 } else {
   window.setTimeout(() => {
-    if (!firestoreListenerStarted) {
+    if (!firestoreConnectionStarted) {
       publicarErrorFirestore(new Error('La inicialización de Firebase no respondió.'));
     }
   }, 10000);

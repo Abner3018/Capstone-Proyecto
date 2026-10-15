@@ -1,24 +1,136 @@
-const categoriasMantencion = {
-  machines: registro => ['Máquinas', 'Climatización', 'Calderas', 'Mantención General'].includes(registro.categoria),
-  garden: registro => ['Jardinería', 'Exteriores'].includes(registro.categoria),
-  reactive: registro => ['Reactiva', 'Gasfitería'].includes(registro.categoria) || (
-    registro.tipo === 'mantencion' && registro.categoria === 'Obras' && registro.estado !== 'Completado'
-  ),
-  history: registro => registro.estado === 'Completado'
+const categoriasMantencion = [
+  { collection: 'alcantarillado', label: 'Alcantarillado' },
+  { collection: 'baño', label: 'Baño' },
+  { collection: 'bodega', label: 'Bodega' },
+  { collection: 'jardineria', label: 'Jardinería' },
+  { collection: 'maquina', label: 'Máquinas' },
+  { collection: 'puertas', label: 'Puertas' },
+  { collection: 'radiador', label: 'Radiador' },
+  { collection: 'refrigerador', label: 'Refrigerador' },
+  { collection: 'televisionespilas', label: 'Televisiones / Pilas' }
+];
+const estadosAlcantarillado = ['Completa', 'No se realizó', 'Otro'];
+const tiposBano = [
+  'Mantención desagüe lavamanos',
+  'Mantención desagüe tina',
+  'Instalación de porta rollo'
+];
+const ubicacionesAlcantarillado = ['Centro de eventos', 'Hotel', 'Casa'];
+const ubicacionesBodega = ['Centro de eventos', 'Hotel'];
+const sectoresJardineria = ['Centro', 'Hotel', 'Parcela Casa'];
+const opcionesSiNo = ['si', 'no'];
+const prioridadesJardineria = ['0', '1', '2', '3'];
+const estadosMaquina = ['Activo', 'Descontinuado'];
+const ubicacionesRefrigerador = [
+  'Bodega quincho', 'Quincho chico', 'Cocina salon', 'Bodega congelados', 'Salon comedor', 'Recepcion'
+];
+const ubicacionesRadiador = ['Hotel', 'Salon', 'Recepción', 'Oficina', 'Sala de caldera'];
+const nombresRadiadorPorUbicacion = {
+  Hotel: [
+    ...Array.from({ length: 8 }, (_, index) => ({ value: `${101 + index} (Rojo)`, label: `${101 + index} (Rojo)` })),
+    ...Array.from({ length: 8 }, (_, index) => ({ value: `${201 + index} (Verde)`, label: `${201 + index} (Verde)` })),
+    ...Array.from({ length: 8 }, (_, index) => ({ value: `${301 + index} (Azul)`, label: `${301 + index} (Azul)` }))
+  ],
+  Salon: [{ value: '2° piso', label: '2° piso' }, { value: '3° piso', label: '3° piso' }],
+  Recepción: [{ value: 'Recepción', label: 'Recepción' }],
+  Oficina: ['Jesús Cordero', 'Andrés Cordero', 'Javiera Cordero'].map(nombre => ({ value: nombre, label: nombre })),
+  'Sala de caldera': ['Caldera', 'Separador de partículas'].map(nombre => ({ value: nombre, label: nombre }))
 };
-const estadosPermitidos = ['Al día', 'Pendiente', 'Vencido', 'En curso', 'Completado'];
+const proveedoresRadiador = ['Cosmoplas', 'Midea', 'otro'];
+const lugaresBano = ['Habitación', 'Baño Público', 'Cabaña'];
+const lugaresTelevisiones = ['Habitación', 'Salon', 'Cabaña'];
+const opcionesNumeroBano = {
+  'Habitación': Array.from({ length: 24 }, (_, index) => {
+    const bloque = Math.floor(index / 8) + 1;
+    return { value: String(bloque * 100 + (index % 8) + 1), label: String(bloque * 100 + (index % 8) + 1) };
+  }),
+  'Baño Público': [{ value: 'Baño P. 1', label: 'Baño P. 1' }, { value: 'Baño P. 2', label: 'Baño P. 2' }],
+  Cabaña: [{ value: 'Sol', label: 'Sol' }, { value: 'Luna', label: 'Luna' }]
+};
+const opcionesNumeroTelevisiones = {
+  'Habitación': [
+    ...Array.from({ length: 8 }, (_, index) => ({ value: String(101 + index), label: `${101 + index} - Rojo` })),
+    ...Array.from({ length: 8 }, (_, index) => ({ value: String(201 + index), label: `${201 + index} - Verde` })),
+    ...Array.from({ length: 8 }, (_, index) => ({ value: String(301 + index), label: `${301 + index} - Azul` }))
+  ],
+  Salon: [{ value: 'Salon 2°piso', label: 'Salon 2°piso' }, { value: 'Salon 3°piso', label: 'Salon 3°piso' }],
+  Cabaña: [{ value: 'Sol', label: 'Sol' }, { value: 'Luna', label: 'Luna' }]
+};
+const esquemaCampos = {
+  alcantarillado: {
+    campos: ['nombrecompleto', 'ubicacion', 'fecha', 'estado', 'detalle'],
+    requeridos: ['nombrecompleto', 'ubicacion', 'fecha', 'estado'],
+    fechas: ['fecha'],
+    opciones: { ubicacion: ubicacionesAlcantarillado, estado: estadosAlcantarillado }
+  },
+  baño: {
+    campos: ['lugar', 'numero', 'tipo', 'fecha'],
+    requeridos: ['lugar', 'numero', 'tipo', 'fecha'],
+    fechas: ['fecha'],
+    opciones: { lugar: lugaresBano, tipo: tiposBano }
+  },
+  bodega: {
+    campos: ['nombrecompleto', 'nemotecnico', 'ubicacion', 'inventariadofecha', 'responsable'],
+    requeridos: ['nombrecompleto', 'nemotecnico', 'ubicacion', 'inventariadofecha', 'responsable'],
+    fechas: ['inventariadofecha'],
+    opciones: { ubicacion: ubicacionesBodega }
+  },
+  puertas: {
+    campos: ['nombrecompleto', 'ubicacion', 'fechaultimamantencion', 'responsable'],
+    requeridos: ['nombrecompleto', 'ubicacion', 'fechaultimamantencion', 'responsable'],
+    fechas: ['fechaultimamantencion']
+  },
+  jardineria: {
+    campos: ['nombre', 'sector', 'periodoinvoto', 'periodoverpri', 'prioridad'],
+    requeridos: ['nombre', 'sector', 'periodoinvoto', 'periodoverpri', 'prioridad'],
+    opciones: {
+      sector: sectoresJardineria,
+      periodoinvoto: opcionesSiNo,
+      periodoverpri: opcionesSiNo,
+      prioridad: prioridadesJardineria
+    },
+    numericos: ['prioridad']
+  },
+  maquina: {
+    campos: ['nombre', 'ubicacion', 'proveedor', 'fechamantencion', 'responsable', 'detalletrabajo', 'estado'],
+    requeridos: ['nombre', 'ubicacion', 'proveedor', 'fechamantencion', 'responsable', 'estado'],
+    fechas: ['fechamantencion'],
+    opciones: { estado: estadosMaquina }
+  },
+  radiador: {
+    campos: ['ubicacion', 'nombre', 'descripcion', 'proveedor', 'fecha', 'responsable', 'detalletrabajo'],
+    requeridos: ['ubicacion', 'nombre', 'proveedor', 'fecha', 'responsable'],
+    fechas: ['fecha'],
+    opciones: { ubicacion: ubicacionesRadiador, proveedor: proveedoresRadiador }
+  },
+  refrigerador: {
+    campos: ['nombre', 'ubicacion', 'proveedor', 'fecha', 'responsable', 'detalle'],
+    requeridos: ['nombre', 'ubicacion', 'proveedor', 'fecha', 'responsable'],
+    fechas: ['fecha'],
+    opciones: { ubicacion: ubicacionesRefrigerador }
+  },
+  televisionespilas: {
+    campos: [
+      'lugar', 'numero', 'tvmarca', 'tamaño', 'controltvoriginal',
+      'controltvmantencionfecha', 'controldecofunciona', 'controldecofechaman'
+    ],
+    requeridos: ['lugar', 'numero', 'tvmarca', 'tamaño', 'controltvoriginal', 'controldecofunciona'],
+    fechasONa: ['controltvmantencionfecha', 'controldecofechaman'],
+    opciones: {
+      lugar: lugaresTelevisiones,
+      controltvoriginal: ['si', 'no'],
+      controldecofunciona: ['si', 'no']
+    },
+    numericos: ['tamaño']
+  }
+};
 const formatoFechaMantencion = new Intl.DateTimeFormat('es-CL', { dateStyle: 'medium' });
 const almacenamientoNotas = 'hotel-almendro-mantencion-notas';
 const notasPorRegistro = leerAlmacenamiento(almacenamientoNotas, {});
-let categoriaActiva = 'machines';
+let categoriaActiva = 'alcantarillado';
 let registroActivo = null;
 let registroEnEdicion = null;
 let importacionEnCurso = false;
-
-function sincronizarRegistros() {
-  actualizarContadores();
-  renderizarTarjetas();
-}
 
 function leerAlmacenamiento(clave, valorAlternativo) {
   try {
@@ -44,46 +156,62 @@ function escaparHTML(valor) {
   })[caracter]);
 }
 
+function fechaInput(valor) {
+  if (!valor) return '';
+  if (typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(valor)) return valor;
+  const fecha = typeof valor.toDate === 'function'
+    ? valor.toDate()
+    : valor instanceof Date ? valor : new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return '';
+  return `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+}
+
 function fechaVisible(valor) {
-  if (!valor) return 'No informado';
-  const fecha = new Date(`${valor}T12:00:00`);
-  return Number.isNaN(fecha.getTime()) ? escaparHTML(valor) : formatoFechaMantencion.format(fecha);
+  const fecha = fechaInput(valor);
+  if (!fecha) return 'No informada';
+  const [year, month, day] = fecha.split('-').map(Number);
+  return formatoFechaMantencion.format(new Date(year, month - 1, day));
 }
 
 function claseBadge(estado) {
-  if (estado === 'Completado' || estado === 'Al día') return 'status-done';
-  if (estado === 'Pendiente') return 'status-pending';
-  if (estado === 'Vencido') return 'status-overdue';
-  if (estado === 'En curso') return 'status-progress';
-  return 'status-unknown';
+  if (estado === 'Completa' || estado === 'Activo') return 'status-done';
+  if (estado === 'No se realizó' || estado === 'Descontinuado') return 'status-overdue';
+  if (estado === 'Otro') return 'status-unknown';
+  return 'status-pending';
 }
 
-function ubicacionVisible(valor) {
-  const ubicacion = String(valor || '').trim();
-  if (!ubicacion) return 'Ubicación no informada';
-  const numeroHabitacion = ubicacion.match(/^(?:hab(?:itación)?\.?\s*)?(\d+[a-z]?)$/i);
-  if (numeroHabitacion) return `Hab. ${numeroHabitacion[1]}`;
-  return ubicacion;
+function categoriaLabel(collection) {
+  return categoriasMantencion.find(categoria => categoria.collection === collection)?.label || collection;
+}
+
+function valorBusqueda(registro) {
+  return Object.entries(registro)
+    .filter(([campo]) => !['id', 'coleccion'].includes(campo))
+    .map(([campo, valor]) => campo === 'tipo' && registro.tipoMantencion ? [campo, registro.tipoMantencion] : [campo, valor])
+    .map(([, valor]) => valor instanceof Date || (valor && typeof valor.toDate === 'function') ? fechaVisible(valor) : valor)
+    .filter(valor => valor !== null && valor !== undefined && typeof valor !== 'object')
+    .join(' ')
+    .toLocaleLowerCase('es-CL');
 }
 
 function filtrarRegistros() {
-  const categoria = categoriasMantencion[categoriaActiva];
   const consulta = document.getElementById('maintenanceSearch').value.trim().toLocaleLowerCase('es-CL');
   const estado = document.getElementById('statusFilter').value;
   return ommData.filter(registro => {
-    if (registro.tipo !== 'mantencion' || !categoria(registro)) return false;
+    if (registro.coleccion !== categoriaActiva) return false;
     if (estado !== 'Todos' && registro.estado !== estado) return false;
-    const texto = [registro.id, registro.codigoOMM, registro.titulo, registro.categoria, registro.ubicacion, registro.responsable, registro.estado]
-      .filter(Boolean).join(' ').toLocaleLowerCase('es-CL');
-    return !consulta || texto.includes(consulta);
+    return !consulta || valorBusqueda(registro).includes(consulta);
   });
 }
 
 function actualizarContadores() {
-  Object.entries(categoriasMantencion).forEach(([categoria, predicate]) => {
-    const cantidad = ommData.filter(registro => registro.tipo === 'mantencion' && predicate(registro)).length;
-    const elemento = document.querySelector(`[data-count="${categoria}"]`);
-    if (elemento) elemento.textContent = String(cantidad);
+  categoriasMantencion.forEach(({ collection }) => {
+    const cantidad = ommData.filter(registro => registro.coleccion === collection).length;
+    const elemento = document.querySelector(`[data-count="${collection}"]`);
+    if (elemento) {
+      const cargadas = window.ommDataCollectionsLoaded || [];
+      elemento.textContent = cargadas.includes(collection) ? String(cantidad) : '…';
+    }
   });
 }
 
@@ -93,100 +221,661 @@ function renderizarTarjetas() {
   document.getElementById('resultCount').textContent = `${registros.length} registros`;
   document.getElementById('emptyTable').hidden = registros.length > 0;
   cuadrilla.innerHTML = registros.map(registro => {
-    const fechaClave = registro.fechaLimite
-      ? `Vence ${fechaVisible(registro.fechaLimite)}`
-      : `Revisión ${fechaVisible(registro.fechaUltimaRevision || registro.fechaRealizacion)}`;
-    return `<article class="maintenance-card" data-id="${escaparHTML(registro.id)}">
-      <button class="maintenance-card-open" type="button" data-action="detail" aria-haspopup="dialog" aria-label="Ver detalle: ${escaparHTML(registro.titulo)}">
-        <span class="maintenance-card-top"><span class="status-badge ${claseBadge(registro.estado)}">${escaparHTML(registro.estado || 'Sin estado')}</span><span class="maintenance-location" title="${escaparHTML(ubicacionVisible(registro.ubicacion))}">${escaparHTML(ubicacionVisible(registro.ubicacion))}</span></span>
-        <span class="maintenance-card-title">${escaparHTML(registro.titulo)}</span>
-        <span class="maintenance-card-category">${escaparHTML(registro.categoria)}</span>
-        <span class="maintenance-card-metrics"><span class="maintenance-card-date"><small>${registro.fechaLimite ? 'Fecha límite' : 'Última revisión'}</small><strong>${escaparHTML(fechaClave.replace(/^(Vence|Revisión) /, ''))}</strong></span></span>
+    const titulo = registro.titulo || `Mantención · ${categoriaLabel(registro.coleccion)}`;
+    const ubicacion = registro.ubicacion || registro.lugar || 'Ubicación no informada';
+    const fechaValor = [
+      registro.fechaLimite, registro.fecha, registro.inventariadofecha,
+      registro.fechaultimamantencion, registro.fechamantencion,
+      registro.controltvmantencionfecha, registro.controldecofechaman
+    ].find(valor => valor && String(valor).toLocaleLowerCase('es-CL') !== 'na');
+    const fecha = fechaVisible(fechaValor);
+    const estado = registro.estado || 'Sin estado';
+    const responsable = registro.responsable ? `<span class="maintenance-card-assignee">Responsable: ${escaparHTML(registro.responsable)}</span>` : '';
+    const nemotecnico = registro.nemotecnico ? `<span class="maintenance-card-code">${escaparHTML(registro.nemotecnico)}</span>` : '';
+    return `<article class="maintenance-card" data-id="${escaparHTML(registro.id)}" data-collection="${escaparHTML(registro.coleccion)}">
+      <button class="maintenance-card-open" type="button" data-action="detail" aria-haspopup="dialog" aria-label="Ver detalle: ${escaparHTML(titulo)}">
+        <span class="maintenance-card-top"><span class="status-badge ${claseBadge(estado)}">${escaparHTML(estado)}</span><span class="maintenance-location" title="${escaparHTML(ubicacion)}">${escaparHTML(ubicacion)}</span></span>
+        <span class="maintenance-card-title">${escaparHTML(titulo)}</span>
+        <span class="maintenance-card-category">${escaparHTML(categoriaLabel(registro.coleccion))}</span>
+        ${nemotecnico}
+        ${responsable}
+        <span class="maintenance-card-metrics"><span class="maintenance-card-date"><small>Fecha</small><strong>${escaparHTML(fecha)}</strong></span></span>
       </button>
       <div class="maintenance-card-actions" aria-label="Acciones de mantención">
         <button class="card-action-button" type="button" data-action="edit">Editar</button>
-        ${registro.estado === 'Completado' ? '' : '<button class="card-action-button" type="button" data-action="complete">Marcar como Completado</button>'}
         <button class="card-action-button card-action-delete" type="button" data-action="delete">Eliminar</button>
       </div>
     </article>`;
   }).join('');
 }
 
-function obtenerRegistro(id) {
-  return ommData.find(registro => registro.id === id);
+function sincronizarRegistros() {
+  actualizarContadores();
+  renderizarTarjetas();
 }
 
-function abrirDetalle(registro, editarEstado = false) {
+function obtenerRegistro(id, collection) {
+  return ommData.find(registro => registro.id === id && registro.coleccion === collection);
+}
+
+function valorDetalle(valor) {
+  if (valor === null || valor === undefined || valor === '') return 'No informado';
+  if (typeof valor.toDate === 'function') return fechaVisible(valor);
+  if (valor instanceof Date) return fechaVisible(valor);
+  if (typeof valor === 'object') return JSON.stringify(valor);
+  return String(valor);
+}
+
+function abrirDetalle(registro) {
   registroActivo = registro;
-  const dialogo = document.getElementById('ommDialog');
-  document.getElementById('dialogTitle').textContent = registro.titulo;
-  document.getElementById('dialogCode').textContent =
-    `ID: #${String(registro.idSecuencial).padStart(3, '0')}`;
-  const campos = [
-    ['Descripción', registro.descripcion || 'No informado'],
-    ['Categoría', registro.categoria || 'No informado'], ['Ubicación', registro.ubicacion || 'No informado'],
-    ['Estado', registro.estado || 'No informado'], ['Prioridad', registro.prioridad || 'No informada'],
-    ['Fecha límite', fechaVisible(registro.fechaLimite)],
-    ['Última revisión', fechaVisible(registro.fechaUltimaRevision || registro.fechaRealizacion)],
-    ['Responsable', registro.responsable || 'No informado'], ['Proveedor', registro.proveedor || 'No informado'],
-    ['Presupuesto', registro.presupuesto === null ? 'No informado' : formatoCLP.format(registro.presupuesto)],
-    ['Frecuencia', registro.frecuencia || 'No informada'], ['Fuente', registro.origen || 'No informada']
+  const titulo = registro.titulo || `Mantención · ${categoriaLabel(registro.coleccion)}`;
+  document.getElementById('dialogTitle').textContent = titulo;
+  document.getElementById('dialogCode').textContent = `Colección: ${registro.coleccion} · ID: ${registro.id}`;
+  const camposCategoria = {
+    bodega: ['nombrecompleto', 'nemotecnico', 'ubicacion', 'inventariadofecha', 'responsable'],
+    puertas: ['nombrecompleto', 'ubicacion', 'fechaultimamantencion', 'responsable'],
+    jardineria: ['nombre', 'sector', 'periodoinvoto', 'periodoverpri', 'prioridad'],
+    maquina: ['nombre', 'ubicacion', 'proveedor', 'fechamantencion', 'responsable', 'detalletrabajo', 'estado'],
+    radiador: ['ubicacion', 'nombre', 'descripcion', 'proveedor', 'fecha', 'responsable', 'detalletrabajo'],
+    refrigerador: ['nombre', 'ubicacion', 'proveedor', 'fecha', 'responsable', 'detalle'],
+    televisionespilas: [
+      'lugar', 'numero', 'tvmarca', 'tamaño', 'controltvoriginal',
+      'controltvmantencionfecha', 'controldecofunciona', 'controldecofechaman'
+    ]
+  };
+  const camposInternos = [
+    'id', 'coleccion', 'titulo', 'categoria', 'codigoOMM', 'fechaLimite', 'fechaUltimaRevision',
+    'fechaRealizacion', 'tipoMantencion', 'prioridad', 'presupuesto', 'presupuestoEjecutado',
+    'responsable', 'descripcion', 'proveedor', 'origen', 'archivosAdjuntos', 'frecuencia',
+    'preventivo', 'tipo'
   ];
-  document.getElementById('detailFields').innerHTML = campos.map(([etiqueta, valor]) =>
+  const camposVisibles = camposCategoria[registro.coleccion]
+    ? camposCategoria[registro.coleccion]
+      .filter(campo => registro[campo] !== undefined && registro[campo] !== null && registro[campo] !== '')
+      .map(campo => [campo, valorDetalle(registro[campo])])
+    : Object.entries(registro)
+      .filter(([campo]) => !camposInternos.includes(campo))
+      .map(([campo, valor]) => [campo, valorDetalle(valor)]);
+  if (registro.coleccion === 'baño' && registro.tipoMantencion) {
+    camposVisibles.push(['tipo', valorDetalle(registro.tipoMantencion)]);
+  }
+  document.getElementById('detailFields').innerHTML = camposVisibles.map(([etiqueta, valor]) =>
     `<div class="detail-field"><dt>${escaparHTML(etiqueta)}</dt><dd>${escaparHTML(valor)}</dd></div>`
   ).join('');
-  document.getElementById('statusEditor').hidden = !editarEstado;
-  document.getElementById('newStatus').value = estadosPermitidos.includes(registro.estado) ? registro.estado : 'Pendiente';
   renderizarNotas();
-  if (!dialogo.open) dialogo.showModal();
+  document.getElementById('ommDialog').showModal();
+}
+
+function claveNota(registro) {
+  return `${registro.coleccion}:${registro.id}`;
 }
 
 function renderizarNotas() {
-  const notas = notasPorRegistro[registroActivo.id] || [];
+  const notas = notasPorRegistro[claveNota(registroActivo)] || [];
   document.getElementById('noteList').innerHTML = notas.length
     ? notas.map(nota => `<li><time>${escaparHTML(nota.fecha)}</time>${escaparHTML(nota.texto)}</li>`).join('')
     : '<li class="empty-note">Todavía no hay observaciones en la bitácora.</li>';
 }
 
-async function guardarEstado() {
-  if (!registroActivo) return;
-  const nuevoEstado = document.getElementById('newStatus').value;
-  try {
-    await window.firebaseApi.updateDoc(
-      window.firebaseApi.doc(window.db, 'mantencion_general', registroActivo.id),
-      { estado: nuevoEstado }
-    );
-    registroActivo.estado = nuevoEstado;
-    renderizarTarjetas();
-    actualizarContadores();
-    abrirDetalle(registroActivo, true);
-  } catch (error) {
-    console.error('No se pudo actualizar el estado de la mantención.', error);
-    window.alert('No se pudo guardar el estado. Verifica la conexión y los permisos de Firestore.');
+function campoTexto(nombre, etiqueta, requerido = false, tipo = 'text') {
+  const estrella = requerido ? ' <span aria-hidden="true">*</span>' : '';
+  return `<label class="maintenance-form-field" for="field-${nombre}">${etiqueta}${estrella}
+    <input id="field-${nombre}" name="${nombre}" type="${tipo}"${requerido ? ' required' : ''}>
+  </label>`;
+}
+
+function campoSelector(nombre, etiqueta, opciones, requerido = false) {
+  const estrella = requerido ? ' <span aria-hidden="true">*</span>' : '';
+  return `<label class="maintenance-form-field" for="field-${nombre}">${etiqueta}${estrella}
+    <select id="field-${nombre}" name="${nombre}"${requerido ? ' required' : ''}>
+      <option value="">Selecciona ${etiqueta.toLocaleLowerCase('es-CL')}</option>
+      ${opciones.map(opcion => `<option value="${escaparHTML(opcion)}">${escaparHTML(opcion)}</option>`).join('')}
+    </select>
+  </label>`;
+}
+
+function campoFechaONa(nombre, etiqueta) {
+  return `<label class="maintenance-form-field" for="field-${nombre}">${etiqueta}
+    <input id="field-${nombre}" name="${nombre}" type="text" inputmode="text" placeholder="AAAA-MM-DD o na">
+  </label>`;
+}
+
+function campoNumero(collection) {
+  return `<label class="maintenance-form-field" for="field-numero">Número <span aria-hidden="true">*</span>
+    <select id="field-numero" name="numero" required disabled>
+      <option value="">Selecciona primero el lugar</option>
+    </select>
+  </label>`;
+}
+
+function campoOpcionesDinamicas(nombre, etiqueta, requerido = false) {
+  const estrella = requerido ? ' <span aria-hidden="true">*</span>' : '';
+  return `<label class="maintenance-form-field" for="field-${nombre}">${etiqueta}${estrella}
+    <select id="field-${nombre}" name="${nombre}"${requerido ? ' required' : ''} disabled>
+      <option value="">Selecciona primero la ubicación</option>
+    </select>
+  </label>`;
+}
+
+function actualizarOpcionesNumero(collection, lugar, valorActual = '') {
+  const selector = document.getElementById('field-numero');
+  if (!selector) return;
+  const opcionesPorLugar = collection === 'baño' ? opcionesNumeroBano : opcionesNumeroTelevisiones;
+  const opciones = opcionesPorLugar[lugar] || [];
+  selector.innerHTML = `<option value="">${opciones.length ? 'Selecciona un número' : 'Selecciona primero el lugar'}</option>` +
+    opciones.map(opcion => `<option value="${escaparHTML(opcion.value)}">${escaparHTML(opcion.label)}</option>`).join('');
+  selector.disabled = opciones.length === 0;
+  if (opciones.some(opcion => opcion.value === valorActual)) selector.value = valorActual;
+}
+
+function actualizarOpcionesNombreRadiador(ubicacion, valorActual = '') {
+  const selector = document.getElementById('field-nombre');
+  if (!selector) return;
+  const opciones = nombresRadiadorPorUbicacion[ubicacion] || [];
+  selector.innerHTML = `<option value="">${opciones.length ? 'Selecciona un nombre' : 'Selecciona primero la ubicación'}</option>` +
+    opciones.map(opcion => `<option value="${escaparHTML(opcion.value)}">${escaparHTML(opcion.label)}</option>`).join('');
+  selector.disabled = opciones.length === 0;
+  if (opciones.some(opcion => opcion.value === valorActual)) selector.value = valorActual;
+}
+
+function renderizarCamposCategoria(collection, valores = {}) {
+  const contenedor = document.getElementById('categoryFields');
+  if (!collection) {
+    contenedor.innerHTML = '<p class="category-fields-hint">Selecciona una categoría para mostrar sus campos.</p>';
+    return;
+  }
+  if (collection === 'alcantarillado') {
+    contenedor.innerHTML = `<div class="maintenance-form-grid">
+      ${campoTexto('nombrecompleto', 'Nombre completo', true)}
+      ${campoSelector('ubicacion', 'Ubicación', ubicacionesAlcantarillado, true)}
+      ${campoTexto('fecha', 'Fecha', true, 'date')}
+      <label class="maintenance-form-field" for="field-estado">Estado <span aria-hidden="true">*</span>
+        <select id="field-estado" name="estado" required>
+          <option value="">Selecciona un estado</option>
+          ${estadosAlcantarillado.map(estado => `<option value="${estado}">${estado}</option>`).join('')}
+        </select>
+      </label>
+      <label class="maintenance-form-field field-wide" for="field-detalle">Detalle
+        <textarea id="field-detalle" name="detalle" rows="3"></textarea>
+      </label>
+    </div>`;
+  } else if (collection === 'baño') {
+    contenedor.innerHTML = `<div class="maintenance-form-grid">
+      <label class="maintenance-form-field" for="field-lugar">Lugar <span aria-hidden="true">*</span>
+        <select id="field-lugar" name="lugar" required>
+          <option value="">Selecciona lugar</option>
+          ${lugaresBano.map(lugar => `<option value="${lugar}">${lugar}</option>`).join('')}
+        </select>
+      </label>
+      ${campoNumero(collection)}
+      ${campoSelector('tipo', 'Tipo', tiposBano, true)}
+      ${campoTexto('fecha', 'Fecha', true, 'date')}
+    </div>`;
+  } else if (collection === 'bodega') {
+    contenedor.innerHTML = `<div class="maintenance-form-grid">
+      ${campoTexto('nombrecompleto', 'Nombre completo', true)}
+      ${campoTexto('nemotecnico', 'Nemotécnico', true)}
+      ${campoSelector('ubicacion', 'Ubicación', ubicacionesBodega, true)}
+      ${campoTexto('inventariadofecha', 'Fecha de inventario', true, 'date')}
+      ${campoTexto('responsable', 'Responsable', true)}
+    </div>`;
+  } else if (collection === 'puertas') {
+    contenedor.innerHTML = `<div class="maintenance-form-grid">
+      ${campoTexto('nombrecompleto', 'Nombre completo', true)}
+      ${campoTexto('ubicacion', 'Ubicación', true)}
+      ${campoTexto('fechaultimamantencion', 'Fecha de última mantención', true, 'date')}
+      ${campoTexto('responsable', 'Responsable', true)}
+    </div>`;
+  } else if (collection === 'jardineria') {
+    contenedor.innerHTML = `<div class="maintenance-form-grid">
+      ${campoTexto('nombre', 'Nombre', true)}
+      ${campoSelector('sector', 'Sector', sectoresJardineria, true)}
+      ${campoSelector('periodoinvoto', 'Periodo invierno otoño', opcionesSiNo, true)}
+      ${campoSelector('periodoverpri', 'Periodo verano primavera', opcionesSiNo, true)}
+      ${campoSelector('prioridad', 'Prioridad', prioridadesJardineria, true)}
+    </div>`;
+  } else if (collection === 'maquina') {
+    contenedor.innerHTML = `<div class="maintenance-form-grid">
+      ${campoTexto('nombre', 'Nombre', true)}
+      ${campoTexto('ubicacion', 'Ubicación', true)}
+      ${campoTexto('proveedor', 'Proveedor', true)}
+      ${campoTexto('fechamantencion', 'Fecha de mantención', true, 'date')}
+      ${campoTexto('responsable', 'Responsable', true)}
+      <label class="maintenance-form-field" for="field-estado">Estado <span aria-hidden="true">*</span>
+        <select id="field-estado" name="estado" required>
+          <option value="">Selecciona un estado</option>
+          ${estadosMaquina.map(estado => `<option value="${escaparHTML(estado)}">${escaparHTML(estado)}</option>`).join('')}
+        </select>
+      </label>
+      <label class="maintenance-form-field field-wide" for="field-detalletrabajo">Detalle trabajo
+        <textarea id="field-detalletrabajo" name="detalletrabajo" rows="3"></textarea>
+      </label>
+    </div>`;
+  } else if (collection === 'radiador') {
+    contenedor.innerHTML = `<div class="maintenance-form-grid">
+      ${campoSelector('ubicacion', 'Ubicación', ubicacionesRadiador, true)}
+      ${campoOpcionesDinamicas('nombre', 'Nombre', true)}
+      <label class="maintenance-form-field field-wide" for="field-descripcion">Descripción
+        <textarea id="field-descripcion" name="descripcion" rows="3"></textarea>
+      </label>
+      ${campoSelector('proveedor', 'Proveedor', proveedoresRadiador, true)}
+      ${campoTexto('fecha', 'Fecha', true, 'date')}
+      ${campoTexto('responsable', 'Responsable', true)}
+      <label class="maintenance-form-field field-wide" for="field-detalletrabajo">Detalle trabajo
+        <textarea id="field-detalletrabajo" name="detalletrabajo" rows="3"></textarea>
+      </label>
+    </div>`;
+  } else if (collection === 'refrigerador') {
+    contenedor.innerHTML = `<div class="maintenance-form-grid">
+      ${campoTexto('nombre', 'Nombre', true)}
+      ${campoSelector('ubicacion', 'Ubicación', ubicacionesRefrigerador, true)}
+      <label class="maintenance-form-field" for="field-proveedor">Proveedor <span aria-hidden="true">*</span>
+        <input id="field-proveedor" name="proveedor" type="text" list="refrigeratorSuppliers" required>
+        <datalist id="refrigeratorSuppliers"><option value="MIMET"><option value="otro"></datalist>
+      </label>
+      ${campoTexto('fecha', 'Fecha', true, 'date')}
+      ${campoTexto('responsable', 'Responsable', true)}
+      <label class="maintenance-form-field field-wide" for="field-detalle">Detalle
+        <textarea id="field-detalle" name="detalle" rows="3"></textarea>
+      </label>
+    </div>`;
+  } else if (collection === 'televisionespilas') {
+    contenedor.innerHTML = `<div class="maintenance-form-grid">
+      <label class="maintenance-form-field" for="field-lugar">Lugar <span aria-hidden="true">*</span>
+        <select id="field-lugar" name="lugar" required>
+          <option value="">Selecciona lugar</option>
+          ${lugaresTelevisiones.map(lugar => `<option value="${lugar}">${lugar}</option>`).join('')}
+        </select>
+      </label>
+      ${campoNumero(collection)}
+      <label class="maintenance-form-field" for="field-tvmarca">Marca TV <span aria-hidden="true">*</span>
+        <input id="field-tvmarca" name="tvmarca" type="text" list="tvBrands" required>
+        <datalist id="tvBrands"><option value="Samsung"><option value="AOC"><option value="otros"></datalist>
+      </label>
+      ${campoTexto('tamaño', 'Tamaño', true, 'number')}
+      ${campoSelector('controltvoriginal', 'Control TV original', ['si', 'no'], true)}
+      ${campoFechaONa('controltvmantencionfecha', 'Fecha mantención control TV')}
+      ${campoSelector('controldecofunciona', 'Control deco funciona', ['si', 'no'], true)}
+      ${campoFechaONa('controldecofechaman', 'Fecha mantención control deco')}
+    </div>`;
+  } else {
+    contenedor.innerHTML = `<p class="category-fields-hint">Los campos específicos de ${escaparHTML(categoriaLabel(collection))} se definirán más adelante.</p>`;
+  }
+
+  Object.entries(valores).forEach(([nombre, valor]) => {
+    const campo = contenedor.querySelector(`[name="${nombre}"]`);
+    if (campo) {
+      const fechaONa = ['controltvmantencionfecha', 'controldecofechaman'].includes(nombre);
+      campo.value = fechaONa && (String(valor).toLocaleLowerCase('es-CL') === 'na')
+        ? 'na'
+        : nombre.toLocaleLowerCase('es-CL').includes('fecha') ? fechaInput(valor) : String(valor ?? '');
+    }
+  });
+  const selectorLugar = contenedor.querySelector('#field-lugar');
+  if (selectorLugar && (collection === 'baño' || collection === 'televisionespilas')) {
+    actualizarOpcionesNumero(collection, valores.lugar || '');
+    const selectorNumero = contenedor.querySelector('#field-numero');
+    if (selectorNumero && valores.numero) selectorNumero.value = String(valores.numero);
+  }
+  if (collection === 'radiador') {
+    actualizarOpcionesNombreRadiador(valores.ubicacion || '', valores.nombre || '');
   }
 }
 
-async function completarMantencion(registro, boton) {
-  boton.disabled = true;
-  try {
-    await window.firebaseApi.updateDoc(
-      window.firebaseApi.doc(window.db, 'mantencion_general', registro.id),
-      { estado: 'Completado' }
-    );
-  } catch (error) {
-    console.error('No se pudo marcar la mantención como completada.', error);
-    window.alert('No se pudo actualizar el estado. Verifica la conexión y los permisos de Firestore.');
-  } finally {
-    boton.disabled = false;
+function seleccionarCategoria(collection) {
+  categoriaActiva = collection;
+  if (typeof window.cargarColeccionMantencion === 'function') {
+    window.cargarColeccionMantencion(collection);
   }
+  document.querySelectorAll('.maintenance-tab').forEach(tab => {
+    const activa = tab.dataset.category === collection;
+    tab.classList.toggle('active', activa);
+    tab.setAttribute('aria-selected', String(activa));
+  });
+  document.getElementById('maintenanceSearch').value = '';
+  document.getElementById('statusFilter').value = 'Todos';
+  renderizarTarjetas();
+}
+
+function abrirFormularioMantencion() {
+  registroEnEdicion = null;
+  document.getElementById('newMaintenanceForm').reset();
+  document.getElementById('newMaintenanceCategory').disabled = false;
+  document.getElementById('newMaintenanceTitle').textContent = 'Nueva Mantención';
+  document.getElementById('saveNewMaintenance').textContent = 'Guardar mantención';
+  renderizarCamposCategoria('');
+  document.getElementById('newMaintenanceDialog').showModal();
+  document.getElementById('newMaintenanceCategory').focus();
+}
+
+function editarFicha(registro) {
+  registroEnEdicion = registro;
+  const formulario = document.getElementById('newMaintenanceForm');
+  formulario.reset();
+  const selector = document.getElementById('newMaintenanceCategory');
+  selector.value = registro.coleccion;
+  selector.disabled = true;
+  const esquema = esquemaCampos[registro.coleccion];
+  const valores = Object.fromEntries((esquema?.campos || []).map(campo => [
+    campo,
+    campo === 'tipo' && registro.coleccion === 'baño' ? registro.tipoMantencion : registro[campo]
+  ]));
+  renderizarCamposCategoria(registro.coleccion, valores);
+  document.getElementById('newMaintenanceTitle').textContent = 'Editar Mantención';
+  document.getElementById('saveNewMaintenance').textContent = 'Guardar cambios';
+  document.getElementById('ommDialog').close();
+  document.getElementById('newMaintenanceDialog').showModal();
+}
+
+function validarFechaISO(valor) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) return false;
+  const [year, month, day] = valor.split('-').map(Number);
+  const fecha = new Date(year, month - 1, day, 12);
+  return fecha.getFullYear() === year && fecha.getMonth() === month - 1 && fecha.getDate() === day;
+}
+
+function validarFormulario(formulario, collection) {
+  const esquema = esquemaCampos[collection];
+  if (!esquema) {
+    window.alert('Selecciona una categoría con campos definidos antes de guardar.');
+    return false;
+  }
+  const datos = new FormData(formulario);
+  const faltantes = esquema.requeridos.filter(nombre => !String(datos.get(nombre) || '').trim());
+  if (collection === 'baño' || collection === 'televisionespilas') {
+    const opcionesNumero = collection === 'baño' ? opcionesNumeroBano : opcionesNumeroTelevisiones;
+    const numerosValidos = opcionesNumero[String(datos.get('lugar') || '')] || [];
+    if (datos.get('numero') && !numerosValidos.some(opcion => opcion.value === String(datos.get('numero')))) {
+      faltantes.push('numero válido para el lugar');
+    }
+  }
+  if (collection === 'radiador') {
+    const nombresValidos = nombresRadiadorPorUbicacion[String(datos.get('ubicacion') || '')] || [];
+    if (datos.get('nombre') && !nombresValidos.some(opcion => opcion.value === String(datos.get('nombre')))) {
+      faltantes.push('nombre válido para la ubicación');
+    }
+  }
+  if (faltantes.length) {
+    window.alert(`Completa los campos obligatorios: ${faltantes.join(', ')}.`);
+    return false;
+  }
+  const camposInvalidos = [];
+  (esquema.numericos || []).forEach(nombre => {
+    const valor = String(datos.get(nombre) || '').trim();
+    if (valor && !Number.isFinite(Number(valor))) camposInvalidos.push(nombre);
+  });
+  (esquema.fechas || []).forEach(nombre => {
+    if (!validarFechaISO(String(datos.get(nombre) || ''))) camposInvalidos.push(nombre);
+  });
+  (esquema.fechasONa || []).forEach(nombre => {
+    const valor = String(datos.get(nombre) || '').trim();
+    if (valor && valor.toLocaleLowerCase('es-CL') !== 'na' && !validarFechaISO(valor)) camposInvalidos.push(nombre);
+  });
+  Object.entries(esquema.opciones || {}).forEach(([nombre, opciones]) => {
+    const valor = String(datos.get(nombre) || '');
+    if (valor && !opciones.includes(valor)) camposInvalidos.push(nombre);
+  });
+  if (camposInvalidos.length) {
+    window.alert(`Revisa los valores de estos campos: ${camposInvalidos.join(', ')}.`);
+    return false;
+  }
+  return true;
+}
+
+function convertirCampo(valor, nombre, esquema) {
+  if ((esquema.fechas || []).includes(nombre)) return new Date(`${valor}T12:00:00`);
+  if ((esquema.fechasONa || []).includes(nombre)) {
+    if (String(valor).toLocaleLowerCase('es-CL') === 'na') return 'na';
+    return new Date(`${valor}T12:00:00`);
+  }
+  if ((esquema.numericos || []).includes(nombre)) return Number(valor);
+  return valor;
+}
+
+function obtenerDocumento(formulario, collection) {
+  const datos = new FormData(formulario);
+  const documento = {};
+  const esquema = esquemaCampos[collection];
+  (esquema?.campos || []).forEach(nombre => {
+    const valor = String(datos.get(nombre) || '').trim();
+    if (!valor) return;
+    documento[nombre] = convertirCampo(valor, nombre, esquema);
+  });
+  return documento;
+}
+
+async function guardarNuevaMantencion(evento) {
+  evento.preventDefault();
+  const formulario = evento.currentTarget;
+  const collection = document.getElementById('newMaintenanceCategory').value;
+  if (!validarFormulario(formulario, collection) || !formulario.reportValidity()) return;
+  const documento = obtenerDocumento(formulario, collection);
+  const botonGuardar = document.getElementById('saveNewMaintenance');
+  botonGuardar.disabled = true;
+  botonGuardar.textContent = 'Guardando…';
+  try {
+    if (!window.db || !window.firebaseApi) throw new Error('Firestore no está disponible.');
+    const referenciaColeccion = window.firebaseApi.collection(window.db, collection);
+    if (registroEnEdicion) {
+      await window.firebaseApi.setDoc(
+        window.firebaseApi.doc(window.db, registroEnEdicion.coleccion, registroEnEdicion.id),
+        documento
+      );
+    } else {
+      await window.firebaseApi.setDoc(window.firebaseApi.doc(referenciaColeccion), documento);
+    }
+    formulario.reset();
+    document.getElementById('newMaintenanceCategory').disabled = false;
+    document.getElementById('newMaintenanceDialog').close();
+    registroEnEdicion = null;
+    seleccionarCategoria(collection);
+  } catch (error) {
+    console.error('No se pudo guardar la mantención en Firestore.', error);
+    window.alert('No se pudo guardar la mantención. Revisa tu conexión y los permisos de Firestore.');
+  } finally {
+    botonGuardar.disabled = false;
+    botonGuardar.textContent = registroEnEdicion ? 'Guardar cambios' : 'Guardar mantención';
+  }
+}
+
+function normalizarEncabezadoImportacion(valor) {
+  return String(valor ?? '').trim().toLocaleLowerCase('es-CL')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+function categoriaImportada(valor) {
+  const clave = normalizarEncabezadoImportacion(valor);
+  return categoriasMantencion.find(categoria =>
+    normalizarEncabezadoImportacion(categoria.collection) === clave ||
+    normalizarEncabezadoImportacion(categoria.label) === clave
+  )?.collection || null;
+}
+
+function fechaImportada(valor) {
+  let fecha;
+  if (valor instanceof Date) {
+    fecha = valor;
+  } else if (typeof valor === 'number' && window.XLSX?.SSF) {
+    const partes = window.XLSX.SSF.parse_date_code(valor);
+    if (!partes) return null;
+    fecha = new Date(partes.y, partes.m - 1, partes.d, 12);
+  } else {
+    const texto = String(valor ?? '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(texto)) return null;
+    const [year, month, day] = texto.split('-').map(Number);
+    fecha = new Date(year, month - 1, day, 12);
+    if (fecha.getFullYear() !== year || fecha.getMonth() !== month - 1 || fecha.getDate() !== day) return null;
+  }
+  return Number.isNaN(fecha.getTime())
+    ? null
+    : new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), 12);
+}
+
+function filasImportadas(matriz) {
+  if (!matriz.length) throw new Error('El archivo está vacío.');
+  const encabezados = matriz[0].map(normalizarEncabezadoImportacion);
+  const campos = [
+    'categoria', 'nombrecompleto', 'ubicacion', 'fecha', 'estado', 'detalle',
+    'lugar', 'numero', 'tipo', 'nemotecnico', 'inventariadofecha',
+    'fechaultimamantencion', 'fechamantencion', 'responsable', 'nombre',
+    'sector', 'periodoinvoto', 'periodoverpri', 'prioridad',
+    'descripcion', 'detalletrabajo', 'proveedor',
+    'tvmarca', 'tamaño', 'controltvoriginal', 'controltvmantencionfecha',
+    'controldecofunciona', 'controldecofechaman'
+  ];
+  const indices = Object.fromEntries(campos.map(campo => [
+    campo,
+    encabezados.indexOf(normalizarEncabezadoImportacion(campo))
+  ]));
+  if (indices.categoria < 0) throw new Error('Falta la columna Categoría.');
+
+  const validas = [];
+  const errores = [];
+  matriz.slice(1).forEach((fila, indice) => {
+    if (!fila.some(valor => String(valor ?? '').trim())) return;
+    const collection = categoriaImportada(fila[indices.categoria]);
+    const registro = {};
+    campos.slice(1).forEach(campo => {
+      if (indices[campo] >= 0) registro[campo] = fila[indices[campo]];
+    });
+    const fallas = [];
+    if (!collection) fallas.push('Categoría desconocida');
+    const esquema = esquemaCampos[collection];
+    if (esquema) {
+      esquema.requeridos.forEach(campo => {
+        if (!String(registro[campo] ?? '').trim()) fallas.push(`Falta ${campo}`);
+      });
+      Object.entries(esquema.opciones || {}).forEach(([campo, opciones]) => {
+        if (registro[campo] && !opciones.includes(String(registro[campo]).trim())) {
+          fallas.push(`${campo} no válido`);
+        }
+      });
+      (esquema.fechas || []).forEach(campo => {
+        if (!fechaImportada(registro[campo])) fallas.push(`${campo} inválida (usa AAAA-MM-DD)`);
+      });
+      (esquema.fechasONa || []).forEach(campo => {
+        const valor = String(registro[campo] ?? '').trim();
+        if (valor && valor.toLocaleLowerCase('es-CL') !== 'na' && !fechaImportada(registro[campo])) {
+          fallas.push(`${campo} inválida (usa AAAA-MM-DD o na)`);
+        }
+      });
+    }
+    if (collection === 'baño' || collection === 'televisionespilas') {
+      const opciones = collection === 'baño' ? opcionesNumeroBano : opcionesNumeroTelevisiones;
+      const validos = opciones[String(registro.lugar || '')] || [];
+      if (registro.numero && !validos.some(opcion => opcion.value === String(registro.numero).trim())) {
+        fallas.push('numero no válido para el lugar');
+      }
+    }
+    if (collection === 'radiador') {
+      const opciones = nombresRadiadorPorUbicacion[String(registro.ubicacion || '')] || [];
+      if (registro.nombre && !opciones.some(opcion => opcion.value === String(registro.nombre).trim())) {
+        fallas.push('nombre no válido para la ubicación');
+      }
+    }
+    if (collection === 'televisionespilas' && !Number.isFinite(Number(registro.tamaño))) {
+      fallas.push('tamaño debe ser numérico');
+    }
+    (esquemaCampos[collection]?.numericos || []).forEach(campo => {
+      if (registro[campo] !== undefined && registro[campo] !== '' && !Number.isFinite(Number(registro[campo]))) {
+        fallas.push(`${campo} debe ser numérico`);
+      }
+    });
+    if (fallas.length) {
+      errores.push(`Fila ${indice + 2}: ${fallas.join(', ')}`);
+      return;
+    }
+
+    const documento = {};
+    (esquemaCampos[collection]?.campos || []).forEach(campo => {
+      const valor = String(registro[campo] ?? '').trim();
+      if (!valor) return;
+      if ((esquemaCampos[collection].fechas || []).includes(campo)) {
+        documento[campo] = fechaImportada(registro[campo]);
+      } else if ((esquemaCampos[collection].fechasONa || []).includes(campo)) {
+        documento[campo] = valor.toLocaleLowerCase('es-CL') === 'na' ? 'na' : fechaImportada(registro[campo]);
+      } else if ((esquemaCampos[collection].numericos || []).includes(campo)) {
+        documento[campo] = Number(valor);
+      } else {
+        documento[campo] = valor;
+      }
+    });
+    validas.push({ collection, documento });
+  });
+  if (errores.length) throw new Error(`No se importaron filas con errores:\n${errores.slice(0, 10).join('\n')}`);
+  if (!validas.length) throw new Error('No se encontraron filas de datos para importar.');
+  return validas;
+}
+
+async function importarMantenciones() {
+  const archivo = document.getElementById('importFileInput').files[0];
+  const resultado = document.getElementById('importResult');
+  const boton = document.getElementById('startImportMaintenance');
+  if (!archivo) return;
+  importacionEnCurso = true;
+  boton.disabled = true;
+  document.getElementById('closeImportMaintenance').disabled = true;
+  document.getElementById('cancelImportMaintenance').disabled = true;
+  resultado.hidden = true;
+  resultado.classList.remove('is-error');
+  let importadas = 0;
+  try {
+    if (!window.db || !window.firebaseApi) throw new Error('Firestore no está disponible.');
+    const extension = archivo.name.split('.').pop().toLocaleLowerCase('es-CL');
+    if (!['xlsx', 'csv'].includes(extension)) throw new Error('Selecciona un archivo .xlsx o .csv.');
+    if (!window.XLSX) throw new Error('No se pudo cargar el lector Excel/CSV.');
+    const libro = extension === 'csv'
+      ? window.XLSX.read(await archivo.text(), { type: 'string', codepage: 65001, raw: true })
+      : window.XLSX.read(await archivo.arrayBuffer(), { type: 'array', cellDates: true });
+    const hoja = libro.Sheets[libro.SheetNames[0]];
+    if (!hoja) throw new Error('El archivo no contiene una hoja de cálculo.');
+    const matriz = window.XLSX.utils.sheet_to_json(hoja, { header: 1, defval: '', raw: true, blankrows: false });
+    const registros = filasImportadas(matriz);
+    for (let inicio = 0; inicio < registros.length; inicio += 400) {
+      const lote = window.firebaseApi.writeBatch(window.db);
+      registros.slice(inicio, inicio + 400).forEach(({ collection, documento }) => {
+        lote.set(window.firebaseApi.doc(window.firebaseApi.collection(window.db, collection)), documento);
+      });
+      await lote.commit();
+      importadas += Math.min(400, registros.length - inicio);
+    }
+    const primeraColeccion = registros[0].collection;
+    seleccionarCategoria(primeraColeccion);
+    resultado.textContent = `Se importaron ${importadas} mantenciones en sus colecciones correspondientes.`;
+    resultado.hidden = false;
+  } catch (error) {
+    console.error('No se pudo completar la importación de mantenciones.', error);
+    resultado.textContent = importadas
+      ? `La importación se interrumpió después de guardar ${importadas} mantención(es). ${error instanceof Error ? error.message : 'Error desconocido.'}`
+      : error instanceof Error ? error.message : 'No se pudo completar la importación.';
+    resultado.classList.add('is-error');
+    resultado.hidden = false;
+  } finally {
+    importacionEnCurso = false;
+    boton.disabled = false;
+    document.getElementById('closeImportMaintenance').disabled = false;
+    document.getElementById('cancelImportMaintenance').disabled = false;
+  }
+}
+
+function descargarPlantillaImportacion() {
+  const contenido = '\uFEFFCategoría,nombrecompleto,nemotecnico,ubicacion,fecha,estado,detalle,lugar,numero,tipo,inventariadofecha,fechaultimamantencion,fechamantencion,responsable,nombre,sector,periodoinvoto,periodoverpri,prioridad,descripcion,detalletrabajo,proveedor,tvmarca,tamaño,controltvoriginal,controltvmantencionfecha,controldecofunciona,controldecofechaman\r\n';
+  const enlace = document.createElement('a');
+  const url = URL.createObjectURL(new Blob([contenido], { type: 'text/csv;charset=utf-8' }));
+  enlace.href = url;
+  enlace.download = 'plantilla-mantenciones.csv';
+  enlace.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 async function eliminarMantencion(registro, boton) {
-  if (!window.confirm(`¿Eliminar la mantención "${registro.titulo}"? Esta acción no se puede deshacer.`)) return;
+  const titulo = registro.titulo || categoriaLabel(registro.coleccion);
+  if (!window.confirm(`¿Eliminar la mantención "${titulo}"? Esta acción no se puede deshacer.`)) return;
   boton.disabled = true;
   try {
     await window.firebaseApi.deleteDoc(
-      window.firebaseApi.doc(window.db, 'mantencion_general', registro.id)
+      window.firebaseApi.doc(window.db, registro.coleccion, registro.id)
     );
   } catch (error) {
     console.error('No se pudo eliminar la mantención de Firestore.', error);
@@ -202,548 +891,21 @@ function exportarReporte() {
   window.setTimeout(() => { document.title = 'Mantención General | Hotel El Almendro'; }, 500);
 }
 
-function seleccionarCategoriaMantencion(categoria) {
-  const categoriaTab = ['Jardinería', 'Exteriores'].includes(categoria)
-    ? 'garden'
-    : ['Reactiva', 'Gasfitería', 'Obras'].includes(categoria)
-      ? 'reactive'
-      : 'machines';
-  categoriaActiva = categoriaTab;
-  document.querySelectorAll('.maintenance-tab').forEach(tab => {
-    const activa = tab.dataset.category === categoriaTab;
-    tab.classList.toggle('active', activa);
-    tab.setAttribute('aria-selected', String(activa));
-  });
-  document.getElementById('maintenanceSearch').value = '';
-  document.getElementById('statusFilter').value = 'Todos';
-  renderizarTarjetas();
-}
-
-function abrirFormularioMantencion() {
-  registroEnEdicion = null;
-  const formulario = document.getElementById('newMaintenanceForm');
-  formulario.reset();
-  document.getElementById('newMaintenanceTitle').textContent = 'Nueva Mantención';
-  document.getElementById('saveNewMaintenance').textContent = 'Guardar mantención';
-  document.getElementById('newMaintenanceDialog').showModal();
-  document.getElementById('newMaintenanceTitleInput').focus();
-}
-
-function editarFicha(registro) {
-  registroEnEdicion = registro;
-  const formulario = document.getElementById('newMaintenanceForm');
-  formulario.reset();
-  const campos = {
-    titulo: registro.titulo || '',
-    descripcion: registro.descripcion || '',
-    categoria: registro.categoria || '',
-    ubicacion: registro.ubicacion || '',
-    estado: registro.estado || 'Pendiente',
-    prioridad: registro.prioridad || '',
-    fechaLimite: registro.fechaLimite || '',
-    fechaUltimaRevision: registro.fechaUltimaRevision || registro.fechaRealizacion || '',
-    responsable: registro.responsable || '',
-    proveedor: registro.proveedor || '',
-    presupuesto: registro.presupuesto ?? '',
-    frecuencia: registro.frecuencia || '',
-    origen: registro.origen || ''
-  };
-  Object.entries(campos).forEach(([nombre, valor]) => {
-    const campo = formulario.elements.namedItem(nombre);
-    if (campo) campo.value = String(valor);
-  });
-  const categoria = formulario.elements.namedItem('categoria');
-  if (registro.categoria && ![...categoria.options].some(opcion => opcion.value === registro.categoria)) {
-    categoria.add(new Option(registro.categoria, registro.categoria));
-    categoria.value = registro.categoria;
-  }
-  document.getElementById('newMaintenanceTitle').textContent = 'Editar Mantención';
-  document.getElementById('saveNewMaintenance').textContent = 'Guardar cambios';
-  document.getElementById('ommDialog').close();
-  document.getElementById('newMaintenanceDialog').showModal();
-  document.getElementById('newMaintenanceTitleInput').focus();
-}
-
-async function guardarNuevaMantencion(evento) {
-  evento.preventDefault();
-  const formulario = evento.currentTarget;
-  if (!formulario.reportValidity()) return;
-
-  const datos = new FormData(formulario);
-  const presupuesto = Number(datos.get('presupuesto'));
-  const textoObligatorio = ['titulo', 'descripcion', 'ubicacion', 'responsable', 'proveedor', 'origen'];
-  const campoVacio = textoObligatorio.find(campo => !String(datos.get(campo) || '').trim());
-  if (campoVacio || !Number.isFinite(presupuesto) || presupuesto < 0) {
-    window.alert(campoVacio
-      ? 'Completa todos los campos obligatorios con contenido.'
-      : 'Ingresa un presupuesto válido igual o mayor que cero.');
-    return;
-  }
-
-  const botonGuardar = document.getElementById('saveNewMaintenance');
-  const documento = {
-    titulo: String(datos.get('titulo')).trim(),
-    descripcion: String(datos.get('descripcion')).trim(),
-    categoria: datos.get('categoria'),
-    ubicacion: String(datos.get('ubicacion')).trim(),
-    estado: datos.get('estado'),
-    prioridad: datos.get('prioridad'),
-    fechaLimite: datos.get('fechaLimite'),
-    fechaUltimaRevision: datos.get('fechaUltimaRevision'),
-    responsable: String(datos.get('responsable')).trim(),
-    proveedor: String(datos.get('proveedor')).trim(),
-    presupuesto,
-    frecuencia: datos.get('frecuencia'),
-    origen: String(datos.get('origen')).trim(),
-    tipo: 'mantencion',
-    preventivo: true
-  };
-
-  botonGuardar.disabled = true;
-  botonGuardar.textContent = 'Guardando…';
-
-  try {
-    if (!window.db || !window.firebaseApi) throw new Error('Firestore no está disponible. Verifica la conexión e inténtalo nuevamente.');
-    if (!window.ommDataLoaded) throw new Error('Espera a que termine de cargar la lista antes de guardar.');
-    const coleccion = window.firebaseApi.collection(window.db, 'mantencion_general');
-    const referencia = registroEnEdicion
-      ? window.firebaseApi.doc(window.db, 'mantencion_general', registroEnEdicion.id)
-      : window.firebaseApi.doc(coleccion);
-    const numeroSecuencial = await reservarIdSecuencial(registroEnEdicion?.id);
-    documento.idSecuencial = numeroSecuencial;
-    documento.fechaCreacion = registroEnEdicion?.fechaCreacion ||
-      window.firebaseApi.serverTimestamp();
-    if (registroEnEdicion) {
-      await window.firebaseApi.updateDoc(referencia, documento);
-      Object.assign(registroEnEdicion, documento);
-    } else {
-      await window.firebaseApi.setDoc(referencia, documento);
-    }
-    formulario.reset();
-    document.getElementById('newMaintenanceDialog').close();
-    const categoriaGuardada = documento.categoria;
-    registroEnEdicion = null;
-    seleccionarCategoriaMantencion(categoriaGuardada);
-  } catch (error) {
-    console.error('No se pudo guardar la ficha de mantención en Firebase.', error);
-    window.alert('No se pudo guardar la ficha. Revisa tu conexión y los permisos de Firestore, e inténtalo nuevamente.');
-  } finally {
-    botonGuardar.disabled = false;
-    botonGuardar.textContent = registroEnEdicion ? 'Guardar cambios' : 'Guardar mantención';
-  }
-}
-
-const encabezadosImportacion = {
-  titulo: ['titulo', 'tarea', 'elemento', 'title'],
-  categoria: ['categoria', 'submodulo', 'category'],
-  ubicacion: ['habitacion', 'habitacion ubicacion', 'ubicacion', 'location', 'room'],
-  estado: ['estado', 'status'],
-  prioridad: ['prioridad', 'priority'],
-  frecuencia: ['frecuencia', 'frequency'],
-  presupuesto: ['presupuesto', 'costo', 'costo presupuestado', 'budget'],
-  responsable: ['responsable', 'assigned to', 'assignedto']
-};
-
-function normalizarEncabezado(valor) {
-  return String(valor ?? '').trim().toLocaleLowerCase('es-CL')
-    .replace(/^\uFEFF/, '')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, ' ').trim();
-}
-
-function textoCelda(valor) {
-  return String(valor ?? '').trim();
-}
-
-function presupuestoImportado(valor) {
-  if (typeof valor === 'number') return Number.isFinite(valor) && valor >= 0 ? valor : null;
-  let texto = textoCelda(valor).replace(/[^\d,.-]/g, '');
-  if (!texto) return null;
-  const ultimaComa = texto.lastIndexOf(',');
-  const ultimoPunto = texto.lastIndexOf('.');
-  if (ultimaComa >= 0 && ultimoPunto >= 0) {
-    const decimal = ultimaComa > ultimoPunto ? ',' : '.';
-    const miles = decimal === ',' ? '.' : ',';
-    texto = texto.split(miles).join('').replace(decimal, '.');
-  } else if (ultimaComa >= 0 || ultimoPunto >= 0) {
-    const separador = ultimaComa >= 0 ? ',' : '.';
-    const partes = texto.split(separador);
-    if (partes.length > 2 || partes[partes.length - 1].length === 3) {
-      texto = partes.join('');
-    } else {
-      texto = `${partes.slice(0, -1).join('')}.${partes[partes.length - 1]}`;
-    }
-  }
-  const numero = Number(texto);
-  return Number.isFinite(numero) && numero >= 0 ? numero : null;
-}
-
-function valorEnumerado(valor, opciones) {
-  const normalizado = normalizarEncabezado(valor);
-  return opciones.find(opcion => normalizarEncabezado(opcion) === normalizado) || null;
-}
-
-function categoriaImportada(valor) {
-  const normalizada = normalizarEncabezado(valor)
-    .replace(/\s+y\s+/g, ' ')
-    .replace(/\s*&\s*/g, ' ');
-  const categorias = {
-    'maquinas equipos': 'Máquinas',
-    maquinas: 'Máquinas',
-    'jardineria exteriores': 'Jardinería',
-    jardineria: 'Jardinería',
-    exteriores: 'Exteriores',
-    'reactiva incidencias': 'Reactiva',
-    reactiva: 'Reactiva',
-    'mantencion general': 'Mantención General',
-    climatizacion: 'Climatización',
-    calderas: 'Calderas',
-    gasfiteria: 'Gasfitería',
-    obras: 'Obras'
-  };
-  return categorias[normalizada] || null;
-}
-
-function filasDeImportacion(matriz) {
-  if (!matriz.length) throw new Error('El archivo no contiene filas para importar.');
-  const encabezados = matriz[0].map(normalizarEncabezado);
-  const indices = {};
-  Object.entries(encabezadosImportacion).forEach(([campo, aliases]) => {
-    indices[campo] = encabezados.findIndex(encabezado => aliases.includes(encabezado));
-  });
-  const camposFaltantes = Object.entries(indices)
-    .filter(([, indice]) => indice < 0)
-    .map(([campo]) => campo);
-  if (camposFaltantes.length) {
-    const nombres = {
-      titulo: 'Título', categoria: 'Categoría', ubicacion: 'Habitación',
-      estado: 'Estado', prioridad: 'Prioridad', frecuencia: 'Frecuencia',
-      presupuesto: 'Presupuesto', responsable: 'Responsable'
-    };
-    throw new Error(`Faltan columnas requeridas: ${camposFaltantes.map(campo => nombres[campo]).join(', ')}.`);
-  }
-
-  const indiceOpcional = aliases => encabezados.findIndex(encabezado => aliases.includes(encabezado));
-  const opcionales = {
-    descripcion: indiceOpcional(['descripcion', 'description']),
-    proveedor: indiceOpcional(['proveedor', 'vendor']),
-    origen: indiceOpcional(['fuente', 'origen', 'source']),
-    fechaLimite: indiceOpcional(['fecha limite', 'fechalimite', 'due date']),
-    fechaUltimaRevision: indiceOpcional(['ultima revision', 'fecha ultima revision', 'review date'])
-  };
-  const filasValidas = [];
-  const filasInvalidas = [];
-  const estados = ['Al día', 'Pendiente', 'Vencido', 'En curso', 'Completado'];
-  const prioridades = ['Baja', 'Media', 'Alta', 'Urgente'];
-  const frecuencias = ['Diaria', 'Semanal', 'Mensual', 'Anual'];
-
-  matriz.slice(1).forEach((fila, indiceFila) => {
-    if (!fila.some(valor => textoCelda(valor))) return;
-    const numeroFila = indiceFila + 2;
-    const titulo = textoCelda(fila[indices.titulo]);
-    const categoria = categoriaImportada(fila[indices.categoria]);
-    const ubicacion = textoCelda(fila[indices.ubicacion]);
-    const estado = valorEnumerado(fila[indices.estado], estados);
-    const prioridad = valorEnumerado(fila[indices.prioridad], prioridades);
-    const frecuencia = valorEnumerado(fila[indices.frecuencia], frecuencias);
-    const presupuesto = presupuestoImportado(fila[indices.presupuesto]);
-    const responsable = textoCelda(fila[indices.responsable]);
-    const errores = [];
-    if (!titulo) errores.push('falta Título');
-    if (!categoria) errores.push('Categoría no reconocida');
-    if (!ubicacion) errores.push('falta Habitación');
-    if (!estado) errores.push('Estado no reconocido');
-    if (!prioridad) errores.push('Prioridad no reconocida');
-    if (!frecuencia) errores.push('Frecuencia no reconocida');
-    if (presupuesto === null) errores.push('Presupuesto debe ser un número igual o mayor que cero');
-    if (!responsable) errores.push('falta Responsable');
-    if (errores.length) {
-      filasInvalidas.push({ numeroFila, errores });
-      return;
-    }
-    filasValidas.push({
-      titulo,
-      categoria,
-      ubicacion,
-      estado,
-      prioridad,
-      frecuencia,
-      presupuesto,
-      responsable,
-      descripcion: opcionales.descripcion >= 0 ? textoCelda(fila[opcionales.descripcion]) : '',
-      proveedor: opcionales.proveedor >= 0 ? textoCelda(fila[opcionales.proveedor]) : '',
-      origen: opcionales.origen >= 0 && textoCelda(fila[opcionales.origen])
-        ? textoCelda(fila[opcionales.origen])
-        : 'Importación masiva',
-      fechaLimite: opcionales.fechaLimite >= 0 ? fechaImportada(fila[opcionales.fechaLimite]) : '',
-      fechaUltimaRevision: opcionales.fechaUltimaRevision >= 0
-        ? fechaImportada(fila[opcionales.fechaUltimaRevision])
-        : ''
-    });
-  });
-  if (!filasValidas.length && !filasInvalidas.length) {
-    throw new Error('No se encontraron filas con datos después de los encabezados.');
-  }
-  return { filasValidas, filasInvalidas };
-}
-
-function fechaImportada(valor) {
-  if (valor instanceof Date && !Number.isNaN(valor.getTime())) return valor.toISOString().slice(0, 10);
-  const texto = textoCelda(valor);
-  if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
-  if (typeof valor === 'number' && window.XLSX?.SSF) {
-    const fecha = window.XLSX.SSF.parse_date_code(valor);
-    if (fecha) return `${fecha.y}-${String(fecha.m).padStart(2, '0')}-${String(fecha.d).padStart(2, '0')}`;
-  }
-  return '';
-}
-
-async function leerArchivoImportacion(archivo) {
-  const extension = archivo.name.split('.').pop().toLocaleLowerCase('es-CL');
-  if (!['xlsx', 'csv'].includes(extension)) throw new Error('Selecciona un archivo con extensión .xlsx o .csv.');
-  if (!window.XLSX) throw new Error('No se pudo cargar el lector Excel/CSV. Comprueba tu conexión e inténtalo nuevamente.');
-  const libro = extension === 'csv'
-    ? window.XLSX.read(await archivo.text(), { type: 'string', codepage: 65001, raw: true })
-    : window.XLSX.read(await archivo.arrayBuffer(), { type: 'array', cellDates: true });
-  const primeraHoja = libro.Sheets[libro.SheetNames[0]];
-  if (!primeraHoja) throw new Error('El archivo no contiene una hoja de cálculo.');
-  const matriz = window.XLSX.utils.sheet_to_json(primeraHoja, {
-    header: 1,
-    defval: '',
-    raw: true,
-    blankrows: false
-  });
-  return filasDeImportacion(matriz);
-}
-
-async function reservarIdsSecuenciales(cantidad) {
-  if (!Number.isSafeInteger(cantidad) || cantidad < 1) throw new Error('La cantidad de IDs a reservar no es válida.');
-  if (!window.firebaseApi || !window.db) throw new Error('Firebase no está disponible.');
-  const referenciaContador = window.firebaseApi.doc(window.db, 'contadores', 'mantencion_general');
-  let primerId = null;
-  await window.firebaseApi.runTransaction(window.db, async transaccion => {
-    const contador = await transaccion.get(referenciaContador);
-    const maximoEnRegistros = ommData.reduce((maximo, registro) =>
-      Math.max(maximo, Number(registro.idSecuencial) || 0), 0
-    );
-    const valorContador = contador.exists() ? Number(contador.data().ultimoId) || 0 : 0;
-    primerId = Math.max(valorContador, maximoEnRegistros) + 1;
-    const ultimoId = primerId + cantidad - 1;
-    if (!Number.isSafeInteger(ultimoId)) throw new Error('Se excedió el rango permitido para los IDs secuenciales.');
-    transaccion.set(referenciaContador, { ultimoId }, { merge: true });
-  });
-  if (!Number.isSafeInteger(primerId) || primerId < 1) throw new Error('No se pudieron reservar los IDs secuenciales.');
-  return primerId;
-}
-
-function actualizarProgresoImportacion(progreso, etiqueta) {
-  document.getElementById('importProgress').hidden = false;
-  document.getElementById('importProgressLabel').textContent = etiqueta;
-  document.getElementById('importProgressValue').textContent = `${progreso}%`;
-  const barra = document.getElementById('importProgressBar');
-  barra.value = progreso;
-  barra.setAttribute('aria-label', etiqueta);
-}
-
-function mostrarFilasInvalidas(filas) {
-  const contenedor = document.getElementById('importInvalidRows');
-  contenedor.replaceChildren();
-  if (!filas.length) {
-    contenedor.hidden = true;
-    return;
-  }
-  const titulo = document.createElement('strong');
-  titulo.textContent = 'Filas omitidas:';
-  const lista = document.createElement('ul');
-  filas.slice(0, 30).forEach(fila => {
-    const item = document.createElement('li');
-    item.textContent = `Fila ${fila.numeroFila}: ${fila.errores.join('; ')}`;
-    lista.append(item);
-  });
-  if (filas.length > 30) {
-    const item = document.createElement('li');
-    item.textContent = `y ${filas.length - 30} filas más.`;
-    lista.append(item);
-  }
-  contenedor.append(titulo, lista);
-  contenedor.hidden = false;
-}
-
-async function importarMantenciones() {
-  const archivo = document.getElementById('importFileInput').files[0];
-  const resultado = document.getElementById('importResult');
-  const botonImportar = document.getElementById('startImportMaintenance');
-  let importadas = 0;
-  if (!archivo) {
-    resultado.textContent = 'Selecciona un archivo antes de iniciar la importación.';
-    resultado.classList.add('is-error');
-    resultado.hidden = false;
-    return;
-  }
-  botonImportar.disabled = true;
-  importacionEnCurso = true;
-  document.getElementById('closeImportMaintenance').disabled = true;
-  document.getElementById('cancelImportMaintenance').disabled = true;
-  resultado.hidden = true;
-  resultado.classList.remove('is-error');
-  mostrarFilasInvalidas([]);
-  try {
-    if (!window.db || !window.firebaseApi) throw new Error('Firestore no está disponible.');
-    if (!window.ommDataLoaded) throw new Error('Espera a que termine de cargar la lista antes de importar.');
-    actualizarProgresoImportacion(5, 'Leyendo archivo…');
-    const { filasValidas, filasInvalidas } = await leerArchivoImportacion(archivo);
-    if (!filasValidas.length) {
-      mostrarFilasInvalidas(filasInvalidas);
-      throw new Error(`No se importó ninguna mantención. ${filasInvalidas.length} fila(s) no cumplen los requisitos.`);
-    }
-    const primerId = await reservarIdsSecuenciales(filasValidas.length);
-    const coleccion = window.firebaseApi.collection(window.db, 'mantencion_general');
-    const tamanoLote = 400;
-    const totalLotes = Math.ceil(filasValidas.length / tamanoLote);
-    for (let inicio = 0; inicio < filasValidas.length; inicio += tamanoLote) {
-      const lote = window.firebaseApi.writeBatch(window.db);
-      filasValidas.slice(inicio, inicio + tamanoLote).forEach((fila, indice) => {
-        const referencia = window.firebaseApi.doc(coleccion);
-        lote.set(referencia, {
-          ...fila,
-          tipo: 'mantencion',
-          preventivo: true,
-          idSecuencial: primerId + inicio + indice,
-          fechaCreacion: window.firebaseApi.serverTimestamp()
-        });
-      });
-      await lote.commit();
-      importadas += Math.min(tamanoLote, filasValidas.length - inicio);
-      const loteActual = Math.floor(inicio / tamanoLote) + 1;
-      actualizarProgresoImportacion(
-        Math.min(100, Math.round(loteActual / totalLotes * 100)),
-        `Guardando lote ${loteActual} de ${totalLotes}…`
-      );
-    }
-    const primeraCategoria = filasValidas[0].categoria;
-    seleccionarCategoriaMantencion(primeraCategoria);
-    actualizarProgresoImportacion(100, 'Importación finalizada');
-    const textoExito = filasValidas.length === 1
-      ? 'Se importó 1 mantención correctamente.'
-      : `Se importaron ${filasValidas.length} mantenciones correctamente.`;
-    resultado.textContent = `${textoExito}${filasInvalidas.length ? ` Se omitieron ${filasInvalidas.length} fila(s) con errores.` : ''}`;
-    resultado.hidden = false;
-    mostrarFilasInvalidas(filasInvalidas);
-    document.getElementById('importFileName').textContent = archivo.name;
-  } catch (error) {
-    console.error('No se pudo completar la importación de mantenciones.', error);
-    resultado.textContent = importadas
-      ? `La importación se interrumpió después de guardar ${importadas} mantención(es). ${error instanceof Error ? error.message : 'Revisa la conexión y los permisos de Firestore.'}`
-      : error instanceof Error
-      ? error.message
-      : 'No se pudo completar la importación. Revisa el archivo, la conexión y los permisos de Firestore.';
-    resultado.classList.add('is-error');
-    resultado.hidden = false;
-  } finally {
-    importacionEnCurso = false;
-    botonImportar.disabled = false;
-    document.getElementById('closeImportMaintenance').disabled = false;
-    document.getElementById('cancelImportMaintenance').disabled = false;
-  }
-}
-
-function abrirImportacionMantenciones() {
-  document.getElementById('importFileInput').value = '';
-  document.getElementById('importFileName').textContent = 'Ningún archivo seleccionado';
-  document.getElementById('startImportMaintenance').disabled = true;
-  document.getElementById('importProgress').hidden = true;
-  document.getElementById('importResult').hidden = true;
-  document.getElementById('importInvalidRows').hidden = true;
-  document.getElementById('importMaintenanceDialog').showModal();
-}
-
-function descargarPlantillaImportacion() {
-  const contenido = '\uFEFFTítulo,Categoría,Habitación,Estado,Prioridad,Frecuencia,Presupuesto,Responsable\r\n';
-  const enlace = document.createElement('a');
-  const url = URL.createObjectURL(new Blob([contenido], { type: 'text/csv;charset=utf-8' }));
-  enlace.href = url;
-  enlace.download = 'plantilla-mantenciones.csv';
-  enlace.click();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-async function reservarIdSecuencial(idRegistroEditado) {
-  if (!window.firebaseApi || !window.db) throw new Error('Firebase no está disponible.');
-  const referenciaContador = window.firebaseApi.doc(window.db, 'contadores', 'mantencion_general');
-  let numeroReservado = null;
-  await window.firebaseApi.runTransaction(window.db, async transaccion => {
-    const contador = await transaccion.get(referenciaContador);
-    const maximoEnRegistros = ommData.reduce((maximo, registro) =>
-      Math.max(maximo, Number(registro.idSecuencial) || 0), 0
-    );
-    const valorContador = contador.exists() ? Number(contador.data().ultimoId) || 0 : 0;
-    if (idRegistroEditado) {
-      const registro = obtenerRegistro(idRegistroEditado);
-      const idExistente = Number(registro?.idSecuencial);
-      if (Number.isSafeInteger(idExistente) && idExistente > 0) {
-        numeroReservado = idExistente;
-        if (idExistente > valorContador) {
-          transaccion.set(referenciaContador, { ultimoId: idExistente }, { merge: true });
-        }
-        return;
-      }
-    }
-    numeroReservado = Math.max(valorContador, maximoEnRegistros) + 1;
-    transaccion.set(referenciaContador, { ultimoId: numeroReservado }, { merge: true });
-  });
-  if (!Number.isSafeInteger(numeroReservado) || numeroReservado < 1) {
-    throw new Error('No se pudo reservar un ID secuencial válido.');
-  }
-  return numeroReservado;
-}
-
 document.querySelectorAll('.maintenance-tab').forEach(boton => {
-  boton.addEventListener('click', () => {
-    categoriaActiva = boton.dataset.category;
-    document.querySelectorAll('.maintenance-tab').forEach(tab => {
-      const activa = tab === boton;
-      tab.classList.toggle('active', activa);
-      tab.setAttribute('aria-selected', String(activa));
-    });
-    document.getElementById('statusFilter').value = 'Todos';
-    renderizarTarjetas();
-  });
+  boton.addEventListener('click', () => seleccionarCategoria(boton.dataset.category));
 });
 document.getElementById('maintenanceSearch').addEventListener('input', renderizarTarjetas);
 document.getElementById('statusFilter').addEventListener('change', renderizarTarjetas);
 document.getElementById('exportReport').addEventListener('click', exportarReporte);
 document.getElementById('newMaintenanceButton').addEventListener('click', abrirFormularioMantencion);
-document.getElementById('importMaintenanceButton').addEventListener('click', abrirImportacionMantenciones);
-document.getElementById('importDropzone').addEventListener('click', () => {
-  document.getElementById('importFileInput').click();
+document.getElementById('importMaintenanceButton').addEventListener('click', () => {
+  document.getElementById('importFileInput').value = '';
+  document.getElementById('importResult').hidden = true;
+  document.getElementById('startImportMaintenance').disabled = true;
+  document.getElementById('importMaintenanceDialog').showModal();
 });
 document.getElementById('importFileInput').addEventListener('change', evento => {
-  const archivo = evento.target.files[0];
-  document.getElementById('importFileName').textContent = archivo
-    ? archivo.name
-    : 'Ningún archivo seleccionado';
-  document.getElementById('startImportMaintenance').disabled = !archivo;
-  document.getElementById('importResult').hidden = true;
-  document.getElementById('importInvalidRows').hidden = true;
-  document.getElementById('importProgress').hidden = true;
-});
-document.getElementById('importDropzone').addEventListener('dragover', evento => {
-  evento.preventDefault();
-  evento.currentTarget.classList.add('is-dragging');
-});
-document.getElementById('importDropzone').addEventListener('dragleave', evento => {
-  evento.currentTarget.classList.remove('is-dragging');
-});
-document.getElementById('importDropzone').addEventListener('drop', evento => {
-  evento.preventDefault();
-  evento.currentTarget.classList.remove('is-dragging');
-  const archivo = evento.dataTransfer.files[0];
-  if (!archivo) return;
-  const transferencia = new DataTransfer();
-  transferencia.items.add(archivo);
-  const entrada = document.getElementById('importFileInput');
-  entrada.files = transferencia.files;
-  entrada.dispatchEvent(new Event('change', { bubbles: true }));
+  document.getElementById('startImportMaintenance').disabled = !evento.currentTarget.files.length;
 });
 document.getElementById('startImportMaintenance').addEventListener('click', () => {
   void importarMantenciones();
@@ -756,12 +918,21 @@ document.getElementById('cancelImportMaintenance').addEventListener('click', () 
   document.getElementById('importMaintenanceDialog').close();
 });
 document.getElementById('importMaintenanceDialog').addEventListener('click', evento => {
-  if (evento.target === evento.currentTarget && !importacionEnCurso) {
-    evento.currentTarget.close();
-  }
+  if (evento.target === evento.currentTarget && !importacionEnCurso) evento.currentTarget.close();
 });
 document.getElementById('importMaintenanceDialog').addEventListener('cancel', evento => {
   if (importacionEnCurso) evento.preventDefault();
+});
+document.getElementById('newMaintenanceCategory').addEventListener('change', evento => {
+  renderizarCamposCategoria(evento.currentTarget.value);
+});
+document.getElementById('categoryFields').addEventListener('change', evento => {
+  const collection = document.getElementById('newMaintenanceCategory').value;
+  if (evento.target.id === 'field-lugar') {
+    actualizarOpcionesNumero(collection, evento.target.value);
+  } else if (collection === 'radiador' && evento.target.id === 'field-ubicacion') {
+    actualizarOpcionesNombreRadiador(evento.target.value);
+  }
 });
 document.getElementById('newMaintenanceForm').addEventListener('submit', guardarNuevaMantencion);
 document.getElementById('closeNewMaintenance').addEventListener('click', () => {
@@ -776,31 +947,26 @@ document.getElementById('newMaintenanceDialog').addEventListener('click', evento
 document.getElementById('maintenanceCards').addEventListener('click', evento => {
   const boton = evento.target.closest('[data-action]');
   const tarjeta = evento.target.closest('.maintenance-card');
-  const registro = tarjeta && obtenerRegistro(tarjeta.dataset.id);
+  const registro = tarjeta && obtenerRegistro(tarjeta.dataset.id, tarjeta.dataset.collection);
   if (!registro || !boton) return;
   if (boton.dataset.action === 'detail') abrirDetalle(registro);
   if (boton.dataset.action === 'edit') editarFicha(registro);
-  if (boton.dataset.action === 'complete') void completarMantencion(registro, boton);
   if (boton.dataset.action === 'delete') void eliminarMantencion(registro, boton);
-});
-document.getElementById('closeDialog').addEventListener('click', () => document.getElementById('ommDialog').close());
-document.getElementById('doneDialog').addEventListener('click', () => document.getElementById('ommDialog').close());
-document.getElementById('editStatus').addEventListener('click', () => {
-  document.getElementById('statusEditor').hidden = false;
-  document.getElementById('newStatus').focus();
 });
 document.getElementById('editRecord').addEventListener('click', () => {
   if (registroActivo) editarFicha(registroActivo);
 });
-document.getElementById('saveStatus').addEventListener('click', guardarEstado);
+document.getElementById('closeDialog').addEventListener('click', () => document.getElementById('ommDialog').close());
+document.getElementById('doneDialog').addEventListener('click', () => document.getElementById('ommDialog').close());
 document.getElementById('noteForm').addEventListener('submit', evento => {
   evento.preventDefault();
   const campo = document.getElementById('noteInput');
   const texto = campo.value.trim();
   if (!texto || !registroActivo) return;
-  const lista = notasPorRegistro[registroActivo.id] || [];
+  const clave = claveNota(registroActivo);
+  const lista = notasPorRegistro[clave] || [];
   lista.unshift({ texto, fecha: formatoFechaMantencion.format(new Date()) });
-  notasPorRegistro[registroActivo.id] = lista;
+  notasPorRegistro[clave] = lista;
   guardarAlmacenamiento(almacenamientoNotas, notasPorRegistro);
   campo.value = '';
   renderizarNotas();
@@ -809,6 +975,8 @@ document.getElementById('ommDialog').addEventListener('click', evento => {
   if (evento.target === evento.currentTarget) evento.currentTarget.close();
 });
 
-const formatoCLP = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
 window.addEventListener('omm-data-updated', sincronizarRegistros);
+window.addEventListener('omm-data-error', () => {
+  document.getElementById('firestoreError').hidden = false;
+});
 sincronizarRegistros();

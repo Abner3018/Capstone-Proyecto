@@ -13,7 +13,7 @@ const coloresEstado = {
   'Completado': '#74a98a',
   'Sin estado': '#aaa198'
 };
-const paletaAreas = ['#b58d3d', '#1b8a5a', '#5b46e0'];
+const paletaAreas = ['#b58d3d', '#1b8a5a', '#5b46e0', '#0958d9', '#d9363e', '#74a98a'];
 const instanciasGraficos = {};
 let areaSeleccionada = 'Todas';
 
@@ -38,25 +38,25 @@ function contarEstados(registros) {
 }
 
 function sumarPresupuestosPorArea(registros) {
-  const areas = [
-    { categoria: 'Obras', etiqueta: 'Mejoras obras' },
-    { categoria: 'Jardinería', etiqueta: 'Jardinería' },
-    { categoria: 'Remodelación', etiqueta: 'Remodelaciones' }
-  ];
-  return areas.map((area, indice) => ({
-    etiqueta: area.etiqueta,
-    monto: registros
-      .filter(registro => registro.categoria === area.categoria)
-      .reduce((total, registro) => total + (registro.presupuesto || 0), 0),
-    color: paletaAreas[indice]
-  })).filter(area => area.monto > 0);
+  const totales = new Map();
+  registros.forEach(registro => {
+    if (!Number.isFinite(registro.presupuesto)) return;
+    const categoria = registro.categoria || 'Sin categoría';
+    totales.set(categoria, (totales.get(categoria) || 0) + registro.presupuesto);
+  });
+  return [...totales].map(([etiqueta, monto], indice) => ({
+    etiqueta,
+    monto,
+    color: paletaAreas[indice % paletaAreas.length]
+  }));
 }
 
 function actualizarTarjetas(registros) {
-  const proyectosActivos = registros.filter(registro => registro.tipo === 'proyecto' && registro.presupuestoActivo);
-  const proyectosEnCurso = proyectosActivos.filter(registro => registro.estado === 'En curso');
+  const conPresupuesto = registros.filter(registro => Number.isFinite(registro.presupuesto));
+  const proyectosEnCurso = registros.filter(registro => registro.estado === 'En curso');
   const alertas = registros.filter(registro =>
-    registro.estado === 'Vencido' || ['Alta', 'Urgente'].includes(registro.prioridad)
+    registro.estado === 'Vencido' || estaVencido(registro.fechaLimite) ||
+    ['Alta', 'Urgente'].includes(registro.prioridad)
   );
   const preventivasConFecha = registros.filter(registro =>
     registro.preventivo && registro.fechaLimite
@@ -65,37 +65,43 @@ function actualizarTarjetas(registros) {
   const preventivasCompletadas = registros.filter(registro =>
     registro.preventivo && registro.estado === 'Completado'
   );
-  const presupuestoActivo = proyectosActivos.reduce(
-    (total, registro) => total + (registro.presupuesto || 0), 0
-  );
+  const presupuestoTotal = conPresupuesto.reduce((total, registro) => total + registro.presupuesto, 0);
 
-  actualizarTexto('kpiBudget', formatoCLP.format(presupuestoActivo));
-  actualizarTexto('kpiBudgetNote', `${proyectosActivos.length} proyectos no cerrados con presupuesto explícito`);
+  actualizarTexto('kpiBudget', formatoCLP.format(presupuestoTotal));
+  actualizarTexto('kpiBudgetNote', `${conPresupuesto.length} registros con presupuesto informado`);
   actualizarTexto('kpiProgress', String(proyectosEnCurso.length));
-  actualizarTexto('kpiProgressNote', `${proyectosEnCurso.length} de ${proyectosActivos.length} proyectos no cerrados`);
+  actualizarTexto('kpiProgressNote', `${proyectosEnCurso.length} registros en curso`);
   actualizarTexto('kpiAlerts', String(alertas.length));
   actualizarTexto('kpiPreventive', preventivasConFecha.length
     ? `${preventivasAlDia.length} / ${preventivasConFecha.length}`
     : 'N/D');
   actualizarTexto('kpiPreventiveNote', preventivasConFecha.length
     ? `${Math.round(preventivasAlDia.length / preventivasConFecha.length * 100)}% según fechas límite registradas`
-    : `${preventivasCompletadas.length} tareas marcadas al día; faltan fechas límite para calcular cumplimiento`);
+    : `${preventivasCompletadas.length} tareas preventivas completadas; sin fechas límite para calcular cumplimiento`);
 
   renderizarAlertas(alertas);
-  renderizarProximos(registros.filter(registro => registro.tipo === 'proyecto' && registro.estado === 'Pendiente'));
+  renderizarProximos(registros.filter(registro =>
+    registro.estado === 'Pendiente' && (registro.periodo || registro.fechaLimite)
+  ));
+}
+
+function estaVencido(fecha) {
+  if (!fecha) return false;
+  const fechaLimite = new Date(`${fecha}T23:59:59`);
+  return !Number.isNaN(fechaLimite.getTime()) && fechaLimite < new Date();
 }
 
 function renderizarAlertas(registros) {
   const lista = document.getElementById('alertList');
   if (!lista) return;
   if (!registros.length) {
-    lista.innerHTML = '<div class="empty-state"><div><strong>Sin alertas críticas registradas</strong><span>No hay OMM marcadas como vencidas ni con prioridad alta o urgente en los archivos revisados.</span></div></div>';
+    lista.innerHTML = '<div class="empty-state"><div><strong>Sin alertas críticas registradas</strong><span>Los registros críticos aparecerán aquí cuando se informen en Firestore.</span></div></div>';
     return;
   }
   lista.innerHTML = `<ul class="alert-list">${registros.map(registro => `
     <li class="alert-item">
-      <div><strong>${registro.titulo}</strong><small>${registro.ubicacion || registro.categoria} · ${registro.responsable || 'Responsable no informado'}</small></div>
-      <span class="status-badge ${claseEstado(registro.estado)}">${registro.estado || registro.prioridad}</span>
+      <div><strong>${escaparDashboard(registro.titulo)}</strong><small>${escaparDashboard(registro.ubicacion || registro.categoria)} · ${escaparDashboard(registro.responsable || 'Responsable no informado')}</small></div>
+      <span class="status-badge ${claseEstado(registro.estado)}">${escaparDashboard(registro.estado || registro.prioridad)}</span>
     </li>`).join('')}</ul>`;
 }
 
@@ -103,8 +109,14 @@ function renderizarProximos(registros) {
   const lista = document.getElementById('upcomingList');
   if (!lista) return;
   lista.innerHTML = registros.length
-    ? registros.map(registro => `<li class="alert-item"><div><strong>${registro.titulo}</strong><small>${registro.periodo || 'Periodo no informado'} · ${registro.responsable || 'Responsable no informado'}</small></div><span class="status-badge status-pending">PENDIENTE</span></li>`).join('')
-    : '<li class="no-records">No hay proyectos pendientes en esta selección.</li>';
+    ? registros.map(registro => `<li class="alert-item"><div><strong>${escaparDashboard(registro.titulo)}</strong><small>${escaparDashboard(registro.periodo || registro.fechaLimite)} · ${escaparDashboard(registro.responsable || 'Responsable no informado')}</small></div><span class="status-badge status-pending">PENDIENTE</span></li>`).join('')
+    : '<li class="no-records">No hay registros pendientes con fecha para esta selección.</li>';
+}
+
+function escaparDashboard(valor) {
+  return String(valor ?? '').replace(/[&<>"']/g, caracter => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[caracter]);
 }
 
 function claseEstado(estado) {
@@ -118,8 +130,8 @@ function claseEstado(estado) {
 
 function renderizarLeyenda(elemento, items, presupuesto = false) {
   elemento.innerHTML = items.length
-    ? items.map(item => `<li><span class="legend-swatch" style="background:${item.color}"></span><span>${item.etiqueta}: ${presupuesto ? formatoCLP.format(item.monto) : item.cantidad}</span></li>`).join('')
-    : '<li>Sin registros para esta área</li>';
+    ? items.map(item => `<li><span class="legend-swatch" style="background:${item.color}"></span><span>${escaparDashboard(item.etiqueta)}: ${presupuesto ? formatoCLP.format(item.monto) : item.cantidad}</span></li>`).join('')
+    : '<li>Sin registros</li>';
 }
 
 function crearGrafico(id, configuracion) {
@@ -131,9 +143,7 @@ function crearGrafico(id, configuracion) {
 
 function renderizarGraficos(registros) {
   const presupuestoPorArea = sumarPresupuestosPorArea(registros);
-  const estados = contarEstados(registros).filter(item =>
-    item.cantidad > 0 || ['Al día', 'Pendiente', 'Vencido', 'En curso', 'Planificado'].includes(item.estado)
-  );
+  const estados = registros.length ? contarEstados(registros).filter(item => item.cantidad > 0) : [];
   const remodelaciones = registros.filter(registro => registro.tipo === 'remodelacion' && registro.presupuesto !== null);
 
   renderizarLeyenda(document.getElementById('budgetLegend'), presupuestoPorArea, true);
@@ -225,9 +235,26 @@ function renderizarGraficos(registros) {
 }
 
 function renderizarDashboard() {
+  actualizarFiltroAreas();
   const registros = obtenerRegistrosVisibles();
   actualizarTarjetas(registros);
   renderizarGraficos(registros);
+}
+
+function actualizarFiltroAreas() {
+  const filtro = document.getElementById('areaFilter');
+  const valorActual = filtro.value;
+  const categorias = [...new Set(ommData.map(registro => registro.categoria).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b, 'es-CL')
+  );
+  filtro.innerHTML = '<option value="Todas">Todas las áreas</option>';
+  categorias.forEach(categoria => {
+    const opcion = document.createElement('option');
+    opcion.value = categoria;
+    opcion.textContent = categoria;
+    filtro.append(opcion);
+  });
+  filtro.value = categorias.includes(valorActual) ? valorActual : 'Todas';
 }
 
 document.getElementById('areaFilter').addEventListener('change', evento => {
@@ -238,3 +265,4 @@ window.addEventListener('resize', () => {
   Object.values(instanciasGraficos).forEach(grafico => grafico.resize());
 });
 renderizarDashboard();
+window.addEventListener('omm-data-updated', renderizarDashboard);

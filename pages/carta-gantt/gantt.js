@@ -87,13 +87,13 @@ function renderizarGantt() {
 
 function adjuntoEnGantt(registro, archivo) {
   if (archivo.url?.startsWith('blob:') || archivo.url?.startsWith('http')) return archivo.url;
-  if (archivo.simulado && archivo.url) return `../mantencion-general/${archivo.url}`;
   return archivo.url || '#';
 }
 
 function abrirDetalleGantt(registro) {
   document.getElementById('ganttDetailTitle').textContent = registro.titulo;
-  document.getElementById('ganttDetailCode').textContent = `${registro.codigoOMM || 'Folio OMM no informado'} · ID interno ${registro.id}`;
+  document.getElementById('ganttDetailCode').textContent =
+    `ID: #${String(registro.idSecuencial).padStart(3, '0')}`;
   const periodo = registro.periodo || (registro.mesInicio && registro.mesFin
     ? `${mesesGantt[registro.mesInicio - 1]}–${mesesGantt[registro.mesFin - 1]} · año no indicado`
     : 'No informado');
@@ -107,7 +107,7 @@ function abrirDetalleGantt(registro) {
   document.getElementById('ganttDetailFields').innerHTML = valores.map(([etiqueta, valor]) => `<div class="gantt-detail"><dt>${escaparGantt(etiqueta)}</dt><dd>${escaparGantt(valor)}</dd></div>`).join('');
   const adjuntos = registro.archivosAdjuntos || [];
   document.getElementById('ganttAttachments').innerHTML = adjuntos.length
-    ? adjuntos.map(archivo => `<li><span>${escaparGantt(archivo.nombre)}${archivo.simulado ? ' · demo' : ''}</span><a href="${escaparGantt(adjuntoEnGantt(registro, archivo))}" target="_blank" rel="noopener">Ver / descargar</a></li>`).join('')
+    ? adjuntos.map(archivo => `<li><span>${escaparGantt(archivo.nombre)}</span><a href="${escaparGantt(adjuntoEnGantt(registro, archivo))}" target="_blank" rel="noopener">Ver / descargar</a></li>`).join('')
     : '<li>Sin archivos adjuntos informados.</li>';
   detalleGantt.showModal();
 }
@@ -126,3 +126,4 @@ document.getElementById('closeGanttDetail').addEventListener('click', () => deta
 document.getElementById('doneGanttDetail').addEventListener('click', () => detalleGantt.close());
 detalleGantt.addEventListener('click', evento => { if (evento.target === detalleGantt) detalleGantt.close(); });
 renderizarGantt();
+window.addEventListener('omm-data-updated', renderizarGantt);

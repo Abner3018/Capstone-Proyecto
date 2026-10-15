@@ -1,8 +1,5 @@
 const formatoMontoObra = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
-const obrasRemodelacion = ommData.filter(registro =>
-  registro.categoria === 'Remodelación' && ['proyecto', 'remodelacion'].includes(registro.tipo)
-);
-const fasesObra = ['Demolición', 'Obra gruesa', 'Terminaciones', 'Equipamiento'];
+let obrasRemodelacion = [];
 const evidenciaLocal = [];
 
 function escaparObra(valor) {
@@ -46,8 +43,13 @@ function renderizarObras() {
     </article>`;
   }).join('');
 
-  document.getElementById('phaseGrid').innerHTML = fasesObra.map((fase, indice) => `
-    <article class="phase-step"><span>FASE 0${indice + 1}</span><strong>${fase}</strong><small>Fecha y estado no informados</small></article>`).join('');
+  const fases = obrasRemodelacion.flatMap(obra =>
+    (Array.isArray(obra.fases) ? obra.fases : Array.isArray(obra.hitos) ? obra.hitos : [])
+      .map(fase => ({ ...fase, proyecto: obra.titulo }))
+  );
+  document.getElementById('phaseGrid').innerHTML = fases.length
+    ? fases.map(fase => `<article class="phase-step"><span>${escaparObra(fase.proyecto)}</span><strong>${escaparObra(fase.titulo || fase.nombre || 'Fase')}</strong><small>${escaparObra(fase.estado || 'Estado no informado')}</small></article>`).join('')
+    : '<p class="gallery-empty">No hay fases ni hitos registrados.</p>';
   document.getElementById('relatedOmm').innerHTML = obrasRemodelacion.map(obra => `
     <div class="related-item"><div><strong>${escaparObra(obra.titulo)}</strong><small>${escaparObra(obra.codigoOMM || `Folio no informado · ID ${obra.id}`)} · ${escaparObra(obra.ubicacion)}</small></div><span class="status-badge ${formatoEstadoObra(obra.estado)}">${escaparObra(obra.estado || 'Sin estado')}</span></div>`).join('');
   document.getElementById('evidenceProject').innerHTML = obrasRemodelacion.map(obra => `<option value="${escaparObra(obra.id)}">${escaparObra(obra.titulo)}</option>`).join('');
@@ -75,5 +77,13 @@ document.getElementById('evidenceInput').addEventListener('change', evento => {
   evento.target.value = '';
 });
 document.getElementById('evidenceProject').addEventListener('change', renderizarGaleria);
-renderizarObras();
-renderizarGaleria();
+function sincronizarObras() {
+  obrasRemodelacion = ommData.filter(registro =>
+    registro.categoria === 'Remodelación' && ['proyecto', 'remodelacion'].includes(registro.tipo)
+  );
+  renderizarObras();
+  renderizarGaleria();
+}
+
+sincronizarObras();
+window.addEventListener('omm-data-updated', sincronizarObras);

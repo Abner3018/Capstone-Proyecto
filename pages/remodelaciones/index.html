@@ -6,6 +6,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../css/styles.css"><link rel="stylesheet" href="remodelaciones.css">
+  <script type="module" src="../../js/firebase-config.js"></script>
   <script defer src="../../js/omm-data.js"></script><script defer src="../../js/main.js"></script><script defer src="remodelaciones.js"></script>
 </head>
 <body data-page="remodelacion">
@@ -19,16 +20,16 @@
   </nav>
   <main class="page-shell renovation-page">
     <div class="view-heading"><div><h2>Remodelaciones</h2><p>Presupuestos por habitación, estado de obra y OMM asociadas.</p></div></div>
-    <div class="source-notice"><strong>Integridad del presupuesto:</strong> las planillas documentan materiales y montos con IVA, pero no informan gasto ejecutado ni porcentaje físico. No se interpreta presupuesto asignado como gasto real.</div>
+    <div class="source-notice"><strong>Integridad del presupuesto:</strong> los presupuestos, gastos y avances se muestran únicamente cuando están informados en Firestore.</div>
     <section class="renovation-summary" aria-label="Resumen financiero">
-      <article class="summary-metric"><span>Presupuesto documentado</span><strong id="renovationBudget">—</strong><small id="renovationCount"></small></article>
-      <article class="summary-metric"><span>Presupuesto ejecutado</span><strong id="executedBudget">N/D</strong><small>Sin gasto ejecutado registrado en estas planillas</small></article>
-      <article class="summary-metric"><span>Avance físico cuantificado</span><strong id="physicalProgress">N/D</strong><small>Las fuentes no incluyen porcentajes de avance</small></article>
+      <article class="summary-metric"><span>Presupuesto documentado</span><strong id="renovationBudget">$0</strong><small id="renovationCount">0 registros</small></article>
+      <article class="summary-metric"><span>Presupuesto ejecutado</span><strong id="executedBudget">N/D</strong><small>Sin gasto ejecutado informado</small></article>
+      <article class="summary-metric"><span>Avance físico cuantificado</span><strong id="physicalProgress">N/D</strong><small>Sin porcentajes de avance informados</small></article>
     </section>
     <section class="renovation-grid" id="renovationGrid" aria-label="Obras de remodelación"></section>
     <section class="panel phase-panel">
-      <div class="view-heading"><div><h2>Fases y hitos</h2><p>Demolición, obra gruesa, terminaciones y equipamiento.</p></div></div>
-      <p class="source-note">Las OMM adjuntas no detallan fases, fechas ni avance por hito. El cronograma queda como estructura de seguimiento pendiente de completar.</p>
+      <div class="view-heading"><div><h2>Fases y hitos</h2><p>Seguimiento de fases asociadas a cada remodelación.</p></div></div>
+      <p class="source-note">Las fases y sus avances aparecerán cuando se registren en Firestore.</p>
       <div class="phase-grid" id="phaseGrid"></div>
     </section>
     <section class="panel evidence-panel">

@@ -1,5 +1,5 @@
 const formatoMontoMejoras = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
-const propuestasMejoras = ommData.filter(registro => registro.tipo === 'proyecto' && registro.categoria !== 'Remodelación');
+let propuestasMejoras = [];
 const cotizacionesLocales = new Map();
 let proyectoActivo = null;
 
@@ -26,7 +26,9 @@ function proyectosFiltrados() {
 
 function renderizarProyectos() {
   const proyectos = proyectosFiltrados();
-  const montoSolicitado = propuestasMejoras.filter(proyecto => proyecto.presupuestoActivo).reduce((total, proyecto) => total + (proyecto.presupuesto || 0), 0);
+  const montoSolicitado = propuestasMejoras.reduce((total, proyecto) =>
+    total + (Number.isFinite(proyecto.presupuesto) ? proyecto.presupuesto : 0), 0
+  );
   const abiertos = propuestasMejoras.filter(proyecto => proyecto.estado !== 'Completado');
   document.getElementById('requestedBudget').textContent = formatoMontoMejoras.format(montoSolicitado);
   document.getElementById('openProjects').textContent = String(abiertos.length);
@@ -90,4 +92,12 @@ document.getElementById('quoteForm').addEventListener('submit', evento => {
 document.getElementById('quoteDialog').addEventListener('click', evento => {
   if (evento.target === evento.currentTarget) evento.currentTarget.close();
 });
-renderizarProyectos();
+function sincronizarPropuestas() {
+  propuestasMejoras = ommData.filter(registro =>
+    registro.tipo === 'proyecto' && registro.categoria !== 'Remodelación'
+  );
+  renderizarProyectos();
+}
+
+sincronizarPropuestas();
+window.addEventListener('omm-data-updated', sincronizarPropuestas);

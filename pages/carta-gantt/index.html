@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../css/styles.css">
   <link rel="stylesheet" href="gantt.css">
+  <script type="module" src="../../js/firebase-config.js"></script>
   <script defer src="../../js/omm-data.js"></script>
   <script defer src="../../js/main.js"></script>
   <script defer src="gantt.js"></script>
@@ -34,7 +35,6 @@
       <p class="gantt-today" id="ganttToday"></p>
       <p class="result-count" id="ganttCount" aria-live="polite"></p>
     </div>
-    <p class="gantt-disclaimer"><strong>Lectura del cronograma:</strong> la nota de proyectos indica meses pero no años; se ubican por mes sin atribuirles un año concreto. Los registros de mantención fechados se muestran como hitos de revisión, no como duraciones. No se inventan fechas límite ausentes.</p>
     <ul class="gantt-legend" aria-label="Leyenda de estados">
       <li><i style="background:var(--green-text)"></i>Completado / Al día</li>
       <li><i style="background:var(--blue-text)"></i>En curso / Hito</li>
